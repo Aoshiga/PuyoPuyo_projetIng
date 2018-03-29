@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <title>PuyoPuyo</title>
     <script>
-    //  pour tout savoir sur l'optimisation des performances dans les canvas
     var context = null;
 
-    // clic sur la zone de jeu (coordonnées relatives au canvas)
     var clic = { x: 0, y: 0 };
 
     /**
@@ -65,52 +63,31 @@
     }
 
     boucleDeJeu = function() {
-        // mise à jour de l'état du jeu
+
         update(Date.now());
-        // affichage de l'état du jeu
+
         render();
-        // rappel de la boucle de jeu
-        // requestAnimationFrame est une fonction JS servant à pré-calculer le prochain affichage
+
         requestAnimationFrame(boucleDeJeu);
     }
 
 
-    /**
-     *  Mise à jour de l'état du jeu
-     *  @param  d   date courante
-     */
     update = function(d) {
 
     }
 
 
-    /**
-     *  Fonction réalisant le rendu de l'état du jeu
-     */
     render = function() {
         // effacement de l'écran
 
     }
 
-
-    /**
-     *  Fonction appelée lorsqu'une touche du clavier est appuyée
-     *  Associée à l'événement "keyDown"
-     */
     captureAppuiToucheClavier = function(event) {
     }
 
-    /**
-     *  Fonction appelée lorsqu'une touche du clavier est relâchée
-     *  Associée à l'événement "keyUp"
-     */
     captureRelacheToucheClavier = function(event) {
     }
 
-    /**
-     *  Fonction appelée lorsqu'une touche du clavier est relâchée
-     *  Associée à l'événement "click"
-     */
     captureClicSouris = function(event) {
         // calcul des coordonnées de la souris dans le canvas
     }
