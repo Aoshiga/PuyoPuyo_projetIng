@@ -106,8 +106,9 @@
         for(var i=0;i<cln; i++){
             for(var j=0; j<lgn; j++){
                 ctx.beginPath();
-                ctx.arc(25+50*i,25+50*j,20,0,2*Math.PI);
+                ctx.arc(25+50*i,75+50*j,20,0,2*Math.PI);
                 ctx.fillStyle = newPuyoColor(tabColor);
+                ctx.stroke();
                 ctx.fill();
             }
         }
@@ -128,7 +129,7 @@
 
 <body onload="init()">
 
-    <canvas id="cvs" width="400" height="700" style="margin: 10px auto; border: solid 1px #000;"></canvas>
+    <canvas id="cvs" width="400" height="750" style="margin: 10px auto; border: solid 1px #000;"></canvas>
 
 </body>
 
