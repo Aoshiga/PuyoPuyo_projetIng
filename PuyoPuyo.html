@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>PuyoPuyo</title>
     <script>
-    var context = null;
+    var ctx = null;
 
     var clic = { x: 0, y: 0 };
 
@@ -14,6 +14,8 @@
     */
     var position = {x: 0, y:0}; //position dans le tableau
     var puyo = {couleur: "", groupe: -1, check: false}; //structure représentant un puyo
+    var needMajAffichage = true;
+
 
     var lgn = 14;
     var cln = 8;
@@ -25,7 +27,7 @@
     var tabColor = ["#FF0000" /*rouge*/, "#00FF00" /*vert*/, "#0000FF" /*bleu*/, "#FF00FF" /*violet*/, "#FFFF00" /*jaune*/];
 
     /**
-    *obet puyo
+    *objet puyo
     */
     function nouveauPuyo(){
       this.couleur = newPuyoColor();
@@ -33,17 +35,16 @@
       this.check = false;
     }
 
-    function newPuyoColor(tabColor){
-      var indice = Math.floor(Math.random()*5);
-      return tabColor[indice];
+    function newPuyoColor(tabColor){;
+      return tabColor[Math.floor(Math.random()*5)];
     }
 
     // initialisation (appelée au chargement du corps du document <body onload="init">)
     function init() {
-        // instanciation de la variable globale contenant le contexte
-        context = document.getElementById("cvs").getContext("2d");
-        context.width = document.getElementById("cvs").width;
-        context.height = document.getElementById("cvs").height;
+        // instanciation de la variable globale contenant le ctxe
+        ctx = document.getElementById("cvs").getContext("2d");
+        ctx.width = document.getElementById("cvs").width;
+        ctx.height = document.getElementById("cvs").height;
 
         // on associe au document des écouteurs d'événements
         document.addEventListener("keydown", captureAppuiToucheClavier) // 2 écouteurs pour le clavier (appui/relâchement d'une touche)
@@ -74,8 +75,6 @@
         tabPuyo[i].push("I");
       }
 
-      console.table(tabPuyo);
-
     }
 
     boucleDeJeu = function() {
@@ -94,8 +93,26 @@
 
 
     render = function() {
-        // effacement de l'écran
 
+        if (needMajAffichage){
+            ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
+            majAffichagePuyos();
+            needMajAffichage = false;
+        }
+
+
+
+    }
+
+    function majAffichagePuyos(){
+        for(var i=0;i<cln; i++){
+            for(var j=0; j<lgn; j++){
+                ctx.beginPath();
+                ctx.arc(25+50*i,25+50*j,20,0,2*Math.PI);
+                ctx.fillStyle = newPuyoColor(tabColor);
+                ctx.fill();
+            }
+        }
     }
 
     captureAppuiToucheClavier = function(event) {
@@ -113,7 +130,7 @@
 
 <body onload="init()">
 
-    <canvas id="cvs" width="800" height="600" style="margin: 10px auto; border: solid 1px #000;"></canvas>
+    <canvas id="cvs" width="400" height="700" style="margin: 10px auto; border: solid 1px #000;"></canvas>
 
 </body>
 
