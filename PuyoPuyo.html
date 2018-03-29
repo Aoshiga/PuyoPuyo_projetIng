@@ -11,6 +11,18 @@
     // clic sur la zone de jeu (coordonnées relatives au canvas)
     var clic = { x: 0, y: 0 };
 
+    /**
+    *Les constantes, les variables et les structures de PuyoPuyo
+    */
+    var position = {x: 0, y:0}; //position dans le tableau
+    var puyo = {couleur: "", groupe: -1, check: false}; //structure représentant un puyo
+
+    var score = 0; //score du joueur
+    var detection = true; //met fin à la destruction des puyos dans le jeu
+    var chaine = 0; //compte le nombre de chaine pour le score
+    var tabPuyo[8][14]; //tableau de jeu
+    var tabGroupeJoueur[2]; //groupe manipulé par le joueur
+
     // initialisation (appelée au chargement du corps du document <body onload="init">)
     init = function() {
         // instanciation de la variable globale contenant le contexte
@@ -23,9 +35,24 @@
         document.addEventListener("keyup", captureRelacheToucheClavier) // on associe au document un écouteur d'événements souris
         document.addEventListener("click", captureClicSouris)
         // --> ces événements vont appeler les fonctions captureXYZ définies après.
+        // initialisation du tableau
+        initTabPuyo(tabPuyo);
 
         // lancement de la boucle de jeu
         boucleDeJeu();
+    }
+
+    //initialisation de notre tableau de puyo tabPuyo
+    initTabPuyo = function(tabPuyo) {
+      for(var i=0;i<tabPuyo.length(), i++){
+        for(var j=0; j<tabPuyo.length(), j++){
+          if(tabPuyo[i]=0 || tabPuyo[i]=tabPuyo.length-1 || tabPuyo[j]=tabPuyo.length-1){
+            tab[i][j] = "I";
+          }else{
+            tab[i][j] = "N";
+          }
+        }
+      }
     }
 
     boucleDeJeu = function() {
@@ -44,6 +71,10 @@
      *  @param  d   date courante
      */
     update = function(d) {
+      for(var i=0, i<tabPuyo.lenth,i++){
+        for(var j=0, j<tabPuyo.length, j++){
+          context.fillText(tab[i][j]);
+        }
       }
     }
 
@@ -53,6 +84,7 @@
      */
     render = function() {
         // effacement de l'écran
+        context.fillText(tab[0][0]);
     }
 
 
@@ -61,7 +93,6 @@
      *  Associée à l'événement "keyDown"
      */
     captureAppuiToucheClavier = function(event) {
-        }
     }
 
     /**
@@ -69,7 +100,6 @@
      *  Associée à l'événement "keyUp"
      */
     captureRelacheToucheClavier = function(event) {
-      }
     }
 
     /**
@@ -78,8 +108,6 @@
      */
     captureClicSouris = function(event) {
         // calcul des coordonnées de la souris dans le canvas
-            }
-        }
     }
 
     </script>
