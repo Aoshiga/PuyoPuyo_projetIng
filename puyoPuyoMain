@@ -19,12 +19,11 @@
         context.height = document.getElementById("cvs").height;
 
         // on associe au document des écouteurs d'événements
-        // 2 écouteurs pour le clavier (appui/relâchement d'une touche)
-        document.addEventListener("keydown", captureAppuiToucheClavier)
-        document.addEventListener("keyup", captureRelacheToucheClavier)
-        // on associe au document un écouteur d'événements souris
+        document.addEventListener("keydown", captureAppuiToucheClavier) // 2 écouteurs pour le clavier (appui/relâchement d'une touche)
+        document.addEventListener("keyup", captureRelacheToucheClavier) // on associe au document un écouteur d'événements souris
         document.addEventListener("click", captureClicSouris)
         // --> ces événements vont appeler les fonctions captureXYZ définies après.
+
         // lancement de la boucle de jeu
         boucleDeJeu();
     }
