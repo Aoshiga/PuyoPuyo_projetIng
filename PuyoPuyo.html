@@ -12,30 +12,29 @@
     /**
     *Les constantes, les variables et les structures de PuyoPuyo
     */
-    var position = {x: 0, y:0}; //position dans le tableau
-    var puyo = {couleur: "", groupe: -1, check: false}; //structure représentant un puyo
     var needMajAffichage = true;
 
 
-    var lgn = 14;
-    var cln = 8;
+    var cln = 14;
+    var lgn = 8;
     var score = 0; //score du joueur
     var detection = true; //met fin à la destruction des puyos dans le jeu
     var chaine = 0; //compte le nombre de chaine pour le score
-    var tabPuyo = []; //tableau de jeu
+    var tabJeu = []; //tableau de jeu
 
     var tabColor = ["#FF0000" /*rouge*/, "#00FF00" /*vert*/, "#0000FF" /*bleu*/, "#FF00FF" /*violet*/, "#FFFF00" /*jaune*/];
-
+    var tabJeu = [];
     /**
     *objet puyo
     */
     function nouveauPuyo(){
-      this.couleur = newPuyoColor();
+      this.couleur = false;
       this.groupe = -1;
       this.check = false;
+      this.position = {x:0, y:0};
     }
 
-    function newPuyoColor(tabColor){;
+    function newPuyoColor(){;
       return tabColor[Math.floor(Math.random()*5)];
     }
 
@@ -52,28 +51,30 @@
         document.addEventListener("click", captureClicSouris)
         // --> ces événements vont appeler les fonctions captureXYZ définies après.
         // initialisation du tableau
-        initTabPuyo(tabPuyo);
+        inittabJeu(tabJeu);
 
         // lancement de la boucle de jeu
         boucleDeJeu();
     }
 
-    //initialisation de notre tableau de puyo tabPuyo
-    initTabPuyo = function(tabPuyo) {
+    //initialisation de notre tableau de puyo tabJeu
+    inittabJeu = function(tabJeu) {
 
-      for(var i=0;i<lgn; i++){
-        tabPuyo.push([]);
-        tabPuyo[i].push("I");
-        for(var j=0; j<cln-2; j++){
-          tabPuyo[i].push("N");
+        for(var i=0;i<lgn; i++){
+            tabJeu.push([]);
+            for(var j=0; j<cln; j++){
+                tabJeu[i].push(new nouveauPuyo);
+                tabJeu[i][j].couleur = "#000000";
+            }
         }
-        tabPuyo[i].push("I");
-      }
 
-      tabPuyo.push([]);
-      for(var j=0; j<cln; j++){
-        tabPuyo[i].push("I");
-      }
+        for(var i=0;i<cln; i++){
+            tabJeu[0][i].couleur = "#FFFFFF";
+            tabJeu[lgn-1][i].couleur = "#FFFFFF";
+        }
+        for(var i=0;i<lgn; i++){
+            tabJeu[i][cln-1].couleur = "#FFFFFF";
+        }
 
     }
 
@@ -88,7 +89,7 @@
 
 
     update = function(d) {
-
+        construirePuyo(0,0);
     }
 
 
@@ -103,15 +104,25 @@
     }
 
     function majAffichagePuyos(){
-        for(var i=0;i<cln; i++){
-            for(var j=0; j<lgn; j++){
-                ctx.beginPath();
-                ctx.arc(25+50*i,75+50*j,20,0,2*Math.PI);
-                ctx.fillStyle = newPuyoColor(tabColor);
-                ctx.stroke();
-                ctx.fill();
+        for(var i=0;i<lgn; i++){
+            for(var j=0; j<cln; j++){
+                if(tabJeu[i][j].couleur == "#FFFFFF"){
+                    ctx.fillRect (50*i,50+50*j, 50, 50);
+                }else{
+                    ctx.beginPath();
+                    ctx.arc(25+50*i,75+50*j,20,0,2*Math.PI);
+                    ctx.fillStyle = tabJeu[i][j].couleur;
+                    ctx.stroke();
+                    ctx.fill();
+                }
+
             }
         }
+    }
+
+    function construirePuyo(i,j){
+      var puyo = new nouveauPuyo();
+      puyo.position = {x:i, y:j};
     }
 
     captureAppuiToucheClavier = function(event) {
