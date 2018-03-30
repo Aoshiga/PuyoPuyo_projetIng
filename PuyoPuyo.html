@@ -62,7 +62,6 @@
     //initialisation de notre tableau de puyo tabJeu
     inittabJeu = function(tabJeu) {
 
-
         for(var i=0;i<lgn; i++){
             tabJeu.push([]);
             for(var j=0; j<cln; j++){
@@ -79,7 +78,9 @@
             tabJeu[i][cln-1].couleur = colorBlock;
         }
 
-        tabJeu[3][1].couleur = newPuyoColor();
+        tabJeu[3][3].couleur = newPuyoColor();
+        tabJeu[4][5].couleur = newPuyoColor();
+        tabJeu[2][3].couleur = newPuyoColor();
 
     }
 
@@ -87,7 +88,7 @@
 
         update(Date.now());
         render();
-        requestAnimationFrame(boucleDeJeu);
+        requestAnimationFrame(setTimeout(boucleDeJeu, 1000));
     }
 
 
@@ -122,7 +123,7 @@
 
     function lePuyoTombeDuCiel(){
         for(var i=0;i<lgn; i++){
-            for(var j=1; j<cln-1; j++){
+            for(var j=cln-1; j>1; j--){
                 if((tabJeu[i][j].couleur !== colorVide)
                 && (tabJeu[i][j].couleur !== colorBlock)
                 && (tabJeu[i][j+1].couleur == colorVide)){
