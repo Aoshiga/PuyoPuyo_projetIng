@@ -121,10 +121,13 @@
     }
 
     function lePuyoTombeDuCiel(){
-        for(var i=0;i<lgn-1; i++){
-            for(var j=0; j<cln-1; j++){
-                if((tabJeu[i][j] != (colorVide && colorBlock)) || [i][j+1].couleur == colorVide){
-                    tabJeu[i][j+1].couleur == tabJeu[i][j].couleur;
+        for(var i=0;i<lgn; i++){
+            for(var j=1; j<cln-2; j++){
+                if(tabJeu[i][j].couleur != colorVide
+                || tabJeu[i][j].couleur != colorBlock
+                || tabJeu[i][j+1].couleur == colorVide){
+
+                    tabJeu[i][j+1].couleur = tabJeu[i][j].couleur;
                     tabJeu[i][j].couleur == colorVide;
                 }
             }
