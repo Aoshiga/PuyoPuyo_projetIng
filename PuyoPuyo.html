@@ -23,7 +23,7 @@
     var detection = true; //met fin à la destruction des puyos dans le jeu
     var chaine = 0; //compte le nombre de chaine pour le score
     var tabJeu = []; //tableau de jeu
-
+    var speed = 10;
     var tabColor = ["#FF0000" /*rouge*/, "#00FF00" /*vert*/, "#0000FF" /*bleu*/, "#FF00FF" /*violet*/, "#FFFF00" /*jaune*/];
     var tabJeu = [];
     /**
@@ -79,30 +79,26 @@
             tabJeu[i][cln-1].couleur = colorBlock;
         }
 
+        tabJeu[3][1].couleur = newPuyoColor();
+
     }
 
     boucleDeJeu = function() {
 
         update(Date.now());
-
         render();
-
         requestAnimationFrame(boucleDeJeu);
     }
 
 
     update = function(d) {
-
+        lePuyoTombeDuCiel();
     }
 
 
     render = function() {
-
-        if (needMajAffichage){
-            ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
-            majAffichagePuyos();
-            needMajAffichage = false;
-        }
+        ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
+        majAffichagePuyos();
 
     }
 
@@ -113,6 +109,7 @@
                     ctx.fillStyle = tabJeu[i][j].couleur;
                     ctx.fillRect (50*i,50+50*j, 50, 50);
                 }else{
+                    console.log("het");
                     ctx.beginPath();
                     ctx.arc(25+50*i,75+50*j,20,0,2*Math.PI);
                     ctx.fillStyle = tabJeu[i][j].couleur;
@@ -124,9 +121,15 @@
         }
     }
 
-    function construirePuyo(i,j){
-      var puyo = new nouveauPuyo();
-      puyo.position = {x:i, y:j};
+    function lePuyoTombeDuCiel(){
+        for(var i=0;i<lgn-1; i++){
+            for(var j=0; j<cln-1; j++){
+                if((tabJeu[i][j] != (colorVide && colorBlock)) || [i][j+1].couleur == colorVide){
+                    tabJeu[i][j+1].couleur == tabJeu[i][j].couleur;
+                    tabJeu[i][j].couleur == colorVide;
+                }
+            }
+        }
     }
 
     captureAppuiToucheClavier = function(event) {
