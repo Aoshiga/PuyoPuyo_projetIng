@@ -59,6 +59,7 @@
 
     //initialisation de notre tableau de puyo tabJeu
     inittabJeu = function(tabJeu) {
+        var colorBlock = "B5351A"
 
         for(var i=0;i<lgn; i++){
             tabJeu.push([]);
@@ -69,11 +70,11 @@
         }
 
         for(var i=0;i<cln; i++){
-            tabJeu[0][i].couleur = "#FFFFFF";
-            tabJeu[lgn-1][i].couleur = "#FFFFFF";
+            tabJeu[0][i].couleur = colorBlock;
+            tabJeu[lgn-1][i].couleur = colorBlock;
         }
         for(var i=0;i<lgn; i++){
-            tabJeu[i][cln-1].couleur = "#FFFFFF";
+            tabJeu[i][cln-1].couleur = colorBlock;
         }
 
     }
@@ -106,7 +107,7 @@
     function majAffichagePuyos(){
         for(var i=0;i<lgn; i++){
             for(var j=0; j<cln; j++){
-                if(tabJeu[i][j].couleur == "#FFFFFF"){
+                if(tabJeu[i][j].couleur == colorBlock){
                     ctx.fillRect (50*i,50+50*j, 50, 50);
                 }else{
                     ctx.beginPath();
