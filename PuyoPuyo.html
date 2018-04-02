@@ -12,7 +12,7 @@
     /**
     *Les constantes, les variables et les structures de PuyoPuyo
     */
-
+    var tomber = false;
     var colorVide = "#FFFFFF";
     var colorBlock = "#B5351A";
     var dir = {x:0, y:0};
@@ -21,10 +21,10 @@
     var score = 0; //score du joueur
     var detection = true; //met fin à la destruction des puyos dans le jeu
     var chaine = 0; //compte le nombre de chaine pour le score
-    var tabJeu; //tableau de jeu
+    var puyo; //tableau de jeu
     var speed = 10;
     var tabColor = ["#FF0000" /*rouge*/, "#00FF00" /*vert*/, "#0000FF" /*bleu*/, "#FF00FF" /*violet*/, "#FFFF00" /*jaune*/];
-    var tabJeu = [];
+    var puyo = [];
     var timer ;
     var legroupe;
     var suite = 0;
@@ -32,40 +32,69 @@
     *objet puyo
     */
 
-    function majTabJeu(newP,oldP,puyo){
-        tabJeu[newP.x][newP.y] = puyo;
-        tabJeu[newP.x][newP.y].pos = newP;
-        tabJeu[oldP.x][oldP.y] = "Vide";
-
-
+    function majPuyo(newP,oldP,lepuyo){
+        puyo[newP.x][newP.y] = lepuyo;
+        puyo[newP.x][newP.y].pos = newP;
+        puyo[oldP.x][oldP.y] = "Vide";
+        if(lepuyo.group != -1){
+            leGroupe.tabGroup[lepuyo.group] = lepuyo;
+        }
     }
 
     function Block(){
         this.type = "Block";
     }
 
-    function Puyo(i=0,j=0){
+    function Puyo(i,j, inGroup=-1){
         this.type = "Puyo";
         this.color = newPuyoColor();
-        this.group = -1;
+        this.group = inGroup;
         this.check = false;
         this.pos = {x:i, y:j};
         this.newPos = function(i,j){
-            majTabJeu({x:i, y:j},this.pos,this);
+            majPuyo({x:i, y:j},this.pos,this);
         }
         this.fall = function(){
-            if(tabJeu[this.pos.x][this.pos.y+1] == "Vide"){
+            if(puyo[this.pos.x][this.pos.y+1] == "Vide"){
+                tomber = true;
                 this.newPos(this.pos.x, this.pos.y+1);
             }
         }
-
     }
 
     function GroupeJoueur(){
-        this.puyo1 = new Puyo();
-        this.puyo2 = new Puyo();
-        this.action = function(){
+        this.type = "groupe";
+        puyo[3][0] = new Puyo(3,0,0);
+        puyo[4][0] = new Puyo(4,0,1);
+        this.tabGroup = [puyo[3][0],puyo[4][0]];
+        this.droite = function(){
+            if (puyo[Math.max(this.tabGroup[0].pos.x,this.tabGroup[1].pos.x) +1]
+                    [Math.max(this.tabGroup[0].pos.y,this.tabGroup[1].pos.y)    ] == "Vide"){
+                this.tabGroup[1].newPos(this.tabGroup[1].pos.x +1, this.tabGroup[1].pos.y);
+                this.tabGroup[0].newPos(this.tabGroup[0].pos.x +1, this.tabGroup[0].pos.y);
+            }
+        }
 
+        this.gauche = function(){
+            if (puyo[Math.min(this.tabGroup[0].pos.x,this.tabGroup[1].pos.x) -1]
+                    [Math.max(this.tabGroup[0].pos.y,this.tabGroup[1].pos.y)    ] == "Vide"){
+                this.tabGroup[0].newPos(this.tabGroup[0].pos.x -1, this.tabGroup[0].pos.y);
+                this.tabGroup[1].newPos(this.tabGroup[1].pos.x -1, this.tabGroup[1].pos.y);
+            }
+        }
+
+        this.haut = function(){
+            if(this.tabGroup[0].pos.x==this.tabGroup[1].pos.x) {
+                this.tabGroup[1].newPos(this.tabGroup[0].pos.x+1, this.tabGroup[0].pos.y);
+            }else{
+                this.tabGroup[1].newPos(this.tabGroup[0].pos.x, this.tabGroup[0].pos.y+1);
+            }
+
+        }
+
+        this.bas = function(){
+            this.tabGroup[0].fall();
+            this.tabGroup[1].fall();
         }
     }
 
@@ -86,29 +115,29 @@
         document.addEventListener("click", captureClicSouris)
         // --> ces événements vont appeler les fonctions captureXYZ définies après.
         // initialisation du tableau
-        inittabJeu(tabJeu);
+        initpuyo(puyo);
         timer = Date.now();
         // lancement de la boucle de jeu
         boucleDeJeu();
     }
 
-    //initialisation de notre tableau de puyo tabJeu
-    inittabJeu = function(tabJeu) {
+    //initialisation de notre tableau de puyo puyo
+    initpuyo = function(puyo) {
         for(var i=0;i<lgn; i++){
-            tabJeu.push([]);
+            puyo.push([]);
             for(var j=0; j<cln; j++){
-                tabJeu[i].push("Vide");
+                puyo[i].push("Vide");
             }
         }
         for(var i=0;i<cln; i++){
-            tabJeu[0][i] = new Block();
-            tabJeu[lgn-1][i] = new Block();
+            puyo[0][i] = new Block();
+            puyo[lgn-1][i] = new Block();
         }
         for(var i=0;i<lgn; i++){
-            tabJeu[i][cln-1] = new Block();
+            puyo[i][cln-1] = new Block();
         }
 
-        tabJeu[2][3] = new Puyo(2,3);
+        leGroupe = new GroupeJoueur();
     }
 
     boucleDeJeu = function() {
@@ -120,11 +149,15 @@
 
 
     update = function(d) {
-        if ((d > timer + 800) && (suite <= 30)){
-            suite+=1;
-            lesPuyosDescendusDuCiel();
 
-            timer= Date.now();
+        if (d > timer + 500){
+            console.log(leGroupe.tabGroup);
+            tomber = false;
+            lesPuyosDescendusDuCiel();
+            if (tomber == false){
+                leGroupe = new GroupeJoueur();
+            }
+            timer = Date.now();
         }
     }
 
@@ -132,16 +165,14 @@
     render = function() {
         ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
         majAffichagePuyos();
-
     }
 
     function lesPuyosDescendusDuCiel(){
          for(var i=0;i<lgn; i++){
              for(var j=cln-1; j>=0; j--){
-                if(tabJeu[i][j].type == "Puyo"){
-                    tabJeu[i][j].fall();
+                if(puyo[i][j].type == "Puyo"){
+                    puyo[i][j].fall();
                 }
-
             }
         }
     }
@@ -150,20 +181,20 @@
         for(var i=0;i<lgn; i++){
             for(var j=0; j<cln; j++){
                 ctx.beginPath();
-                switch (tabJeu[i][j].type) {
+                switch (puyo[i][j].type) {
                     case "Block":
                         ctx.fillStyle = colorBlock;
-                        ctx.fillRect (50*i,50+50*j, 50, 50);
+                        ctx.fillRect (50*i,50*j, 50, 50);
                         break;
 
                     case "Puyo":
-                        ctx.fillStyle = tabJeu[i][j].color;
-                        ctx.arc(25+50*i,75+50*j,20,0,2*Math.PI);
+                        ctx.fillStyle = puyo[i][j].color;
+                        ctx.arc(25+50*i,25+50*j,20,0,2*Math.PI);
                         break;
 
                     default:
-                        ctx.fillStyle = "White";//tabJeu[i][j].couleur;
-                        ctx.arc(25+50*i,75+50*j,20,0,2*Math.PI);
+                        ctx.fillStyle = "White";//puyo[i][j].couleur;
+                        ctx.arc(25+50*i,25+50*j,20,0,2*Math.PI);
 
                 }
                 ctx.stroke();
@@ -172,34 +203,29 @@
         }
     }
 
-
     captureAppuiToucheClavier = function(event) {
         if (event.keyCode==37){
-          dir.x=-1;
+            leGroupe.gauche();
         }
         if (event.keyCode==38){
-          dir.y=-1;
+            leGroupe.haut();
         }
         if (event.keyCode==39){
-          dir.x=1;
+            leGroupe.droite();
         }
         if (event.keyCode==40){
-          dir.y=1;
+            leGroupe.bas();
         }
     }
 
     captureRelacheToucheClavier = function(event) {
         if (event.keyCode==37){
-          dir.x=0;
         }
         if (event.keyCode==38){
-          dir.y=0;
         }
         if (event.keyCode==39){
-          dir.x=0;
         }
         if (event.keyCode==40){
-          dir.y=0;
         }
     }
 
@@ -212,7 +238,7 @@
 
 <body onload="init()">
 
-    <canvas id="cvs" width="400" height="750" style="margin: 10px auto; border: solid 1px #000;"></canvas>
+    <canvas id="cvs" width="400" height="700" style="margin: 10px auto; border: solid 1px #000;"></canvas>
 
 </body>
 
