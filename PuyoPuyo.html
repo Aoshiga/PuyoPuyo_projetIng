@@ -37,7 +37,7 @@
         puyo[newP.x][newP.y].pos = newP;
         puyo[oldP.x][oldP.y] = "Vide";
         if(lepuyo.group != -1){
-            leGroupe.tabGroup[lepuyo.group] = lepuyo;
+            leGroupe.tbGr[lepuyo.group] = lepuyo;
         }
     }
 
@@ -55,47 +55,134 @@
             majPuyo({x:i, y:j},this.pos,this);
         }
         this.fall = function(){
-            if(puyo[this.pos.x][this.pos.y+1] == "Vide"){
+            if(this.basT()){
                 tomber = true;
-                this.newPos(this.pos.x, this.pos.y+1);
+                this.bas();
             }
         }
+
+
+        this.droite = function(){
+            this.newPos(this.pos.x +1, this.pos.y);
+        }
+        this.gauche = function(){
+            this.newPos(this.pos.x -1, this.pos.y);
+        }
+        this.haut = function(){
+            this.newPos(this.pos.x,this.pos.y-1);
+        }
+        this.bas = function(){
+            this.newPos(this.pos.x,this.pos.y+1);
+        }
+
+
+
+        this.droiteT = function(){
+            if (puyo[this.pos.x +1][this.pos.y] == "Vide"){
+                return true;
+            }
+            return false;
+        }
+        this.gaucheT = function(){
+            if (puyo[this.pos.x -1][this.pos.y] == "Vide"){
+                return true;
+            }
+            return false;
+        }
+        this.hautT = function(){
+            if (puyo[this.pos.x][this.pos.y-1] == "Vide"){
+                return true;
+            }
+            return false;
+        }
+        this.basT = function(){
+            if (puyo[this.pos.x][this.pos.y+1] == "Vide"){
+                return true;
+            }
+            return false;
+        }
+
     }
+
 
     function GroupeJoueur(){
         this.type = "groupe";
+        this.rotation = 0;
         puyo[3][0] = new Puyo(3,0,0);
         puyo[4][0] = new Puyo(4,0,1);
-        this.tabGroup = [puyo[3][0],puyo[4][0]];
-        this.droite = function(){
-            if (puyo[Math.max(this.tabGroup[0].pos.x,this.tabGroup[1].pos.x) +1]
-                    [Math.max(this.tabGroup[0].pos.y,this.tabGroup[1].pos.y)    ] == "Vide"){
-                this.tabGroup[1].newPos(this.tabGroup[1].pos.x +1, this.tabGroup[1].pos.y);
-                this.tabGroup[0].newPos(this.tabGroup[0].pos.x +1, this.tabGroup[0].pos.y);
+        this.tbGr = [puyo[3][0],puyo[4][0]];
+        this.go = function(direction, i=0, j=1){
+            if(this.rotation >= 2){
+                i=1;
+                j=0
+            };
+            switch (direction) {
+                case "droite":
+                    if(this.tbGr[j].droiteT()){
+                        this.tbGr[j].droite();
+                        this.tbGr[i].droite();
+                    }
+                    break;
+                case "gauche":
+
+                    if(this.tbGr[i].gaucheT()){
+                        this.tbGr[i].gauche();
+                        this.tbGr[j].gauche();
+                    }
+                    break;
+
+                case "bas":
+                    this.enBas(i,j);
+                    break;
             }
         }
 
-        this.gauche = function(){
-            if (puyo[Math.min(this.tabGroup[0].pos.x,this.tabGroup[1].pos.x) -1]
-                    [Math.max(this.tabGroup[0].pos.y,this.tabGroup[1].pos.y)    ] == "Vide"){
-                this.tabGroup[0].newPos(this.tabGroup[0].pos.x -1, this.tabGroup[0].pos.y);
-                this.tabGroup[1].newPos(this.tabGroup[1].pos.x -1, this.tabGroup[1].pos.y);
+        this.pivoter = function(i,j){
+            switch (this.rotation) {
+                case 0:
+                    if(this.tbGr[i].basT()){
+                        this.tbGr[j].bas();
+                        this.tbGr[j].gauche();
+                        this.rotation = 1;
+                    }
+
+                    break;
+                case 1:
+                    if(this.tbGr[i].gaucheT()){
+                        this.tbGr[j].gauche();
+                        this.tbGr[j].haut();
+                        this.rotation = 2;
+                    }
+
+                    break;
+
+                case 2:
+                    if(this.tbGr[i].hautT()){
+                        this.tbGr[j].haut();
+                        this.tbGr[j].droite();
+                        this.rotation = 3;
+                    }
+                    break;
+                case 3:
+                    if(this.tbGr[i].droiteT()){
+                        this.tbGr[j].droite();
+                        this.tbGr[j].bas();
+                        this.rotation = 0;
+                    }
+                    break;
             }
-        }
-
-        this.haut = function(){
-            if(this.tabGroup[0].pos.x==this.tabGroup[1].pos.x) {
-                this.tabGroup[1].newPos(this.tabGroup[0].pos.x+1, this.tabGroup[0].pos.y);
-            }else{
-                this.tabGroup[1].newPos(this.tabGroup[0].pos.x, this.tabGroup[0].pos.y+1);
-            }
 
         }
 
-        this.bas = function(){
-            this.tabGroup[0].fall();
-            this.tabGroup[1].fall();
+        this.enBas = function(i,j){
+            this.tbGr[j].fall();
+            this.tbGr[i].fall();
+
         }
+    }
+
+    function Combo(){
+
     }
 
     function newPuyoColor(){;
@@ -136,8 +223,6 @@
         for(var i=0;i<lgn; i++){
             puyo[i][cln-1] = new Block();
         }
-
-        leGroupe = new GroupeJoueur();
     }
 
     boucleDeJeu = function() {
@@ -151,8 +236,8 @@
     update = function(d) {
 
         if (d > timer + 500){
-            console.log(leGroupe.tabGroup);
             tomber = false;
+            destroyCombo();
             lesPuyosDescendusDuCiel();
             if (tomber == false){
                 leGroupe = new GroupeJoueur();
@@ -165,6 +250,18 @@
     render = function() {
         ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
         majAffichagePuyos();
+    }
+
+    function destroyCombo(){
+        var tabCheck = [];
+        for(var i=0;i<lgn; i++){
+            for(var j=cln-1; j>=0; j--){
+                if (puyo[i][j].check == false){
+                    testGroupe
+                    puyo[i][j].check = true;
+                }
+            }
+        }
     }
 
     function lesPuyosDescendusDuCiel(){
@@ -205,28 +302,20 @@
 
     captureAppuiToucheClavier = function(event) {
         if (event.keyCode==37){
-            leGroupe.gauche();
+            leGroupe.go("gauche");
         }
         if (event.keyCode==38){
-            leGroupe.haut();
+            leGroupe.pivoter(0,1);
         }
         if (event.keyCode==39){
-            leGroupe.droite();
+            leGroupe.go("droite");
         }
         if (event.keyCode==40){
-            leGroupe.bas();
+            leGroupe.go("bas");
         }
     }
 
     captureRelacheToucheClavier = function(event) {
-        if (event.keyCode==37){
-        }
-        if (event.keyCode==38){
-        }
-        if (event.keyCode==39){
-        }
-        if (event.keyCode==40){
-        }
     }
 
     captureClicSouris = function(event) {
