@@ -140,7 +140,7 @@
         this.pivoter = function(i,j){
             switch (this.rotation) {
                 case 0:
-                    if(this.tbGr[i].basT()){
+                    if(this.tbGr[i].basT() && this.tbGr[j].basT()){
                         this.tbGr[j].bas();
                         this.tbGr[j].gauche();
                         this.rotation = 1;
@@ -148,7 +148,7 @@
 
                     break;
                 case 1:
-                    if(this.tbGr[i].gaucheT()){
+                    if(this.tbGr[i].gaucheT() && this.tbGr[j].gaucheT()){
                         this.tbGr[j].gauche();
                         this.tbGr[j].haut();
                         this.rotation = 2;
@@ -157,14 +157,14 @@
                     break;
 
                 case 2:
-                    if(this.tbGr[i].hautT()){
+                    if(this.tbGr[i].hautT() && this.tbGr[j].hautT()){
                         this.tbGr[j].haut();
                         this.tbGr[j].droite();
                         this.rotation = 3;
                     }
                     break;
                 case 3:
-                    if(this.tbGr[i].droiteT()){
+                    if(this.tbGr[i].droiteT() && this.tbGr[j].droiteT()){
                         this.tbGr[j].droite();
                         this.tbGr[j].bas();
                         this.rotation = 0;
