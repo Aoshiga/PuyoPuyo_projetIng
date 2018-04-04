@@ -181,10 +181,6 @@
         }
     }
 
-    function Combo(){
-
-    }
-
     function newPuyoColor(){;
         return tabColor[Math.floor(Math.random()*5)];
     }
@@ -252,12 +248,72 @@
         majAffichagePuyos();
     }
 
+//     var fin = true;
+//     function destroyCombo(fin){
+//         var fin = true;
+//         var grp = 0
+//         var counter = 0
+//         var counterTotal = 0
+//         for(var i=0;i<lgn; i++){
+//             for(var j=cln-1; j>=0; j--){
+// // Pour i de 1 à 6 faire
+// // Pour j de 1 à 12 faire
+//                 if(puyo[i][j].type = puyo){
+//                     grp ++
+//                     counterTotal = testGroupe(puyos[i][j], grp, counter)
+//                 }
+//                 if(counterTotal >= 4){
+//                     fin = false;
+//                 }
+//                 for(var u=0;u<lgn; u++){
+//                     for(var v=cln-1; v>=0; v--){
+//                         if(puyos[i][j].groupe = grp){
+//
+//                         }
+// Puyos[i][j].couleur = N
+// Puyos[i][j].groupe = 0
+// Fin Si
+// Fait
+// Fait
+// Fin Si
+// counter = 1
+// Fait
+// Fait
+// Si fin==faux alors
+// destruction(puyo[][])
+// chaine++
+// Fin Si
+// retourner chaine
+// FinAction
+// }
+
+    function testGroupe(i,j){
+        if (puyo[i][j].type == "puyo"){
+            tempoGroupe = [puyo[i][j]];
+            if(puyo[i][j].colorDroite()){
+                tempoGroupe += testGroupe(i,j+1);
+            }
+            if(puyo[i][j].colorHaut()){
+                tempoGroupe += testGroupe(i-1,j);
+            }
+            if(puyo[i][j].colorBas()){
+                tempoGroupe += testGroupe(i+1,j);
+            }
+            if(puyo[i][j].colorGauche()){
+                tempoGroupe += testGroupe(i,j-1);
+            }
+        }
+        return tempoGroupe;
+
+    }
+
     function destroyCombo(){
-        var tabCheck = [];
         for(var i=0;i<lgn; i++){
             for(var j=cln-1; j>=0; j--){
-                if (puyo[i][j].check == false){
-                    puyo[i][j].check = true;
+                    grp = testGroupe(i,j);
+                    if ( grp.length >= 4){
+                        destroy(grp);
+                    }
                 }
             }
         }
