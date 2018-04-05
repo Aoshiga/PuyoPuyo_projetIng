@@ -12,6 +12,7 @@
     /**
     *Les constantes, les variables et les structures de PuyoPuyo
     */
+    var actif = true;
     var tomber = false;
     var colorVide = "#FFFFFF";
     var colorBlock = "#B5351A";
@@ -59,6 +60,10 @@
             if(this.basT()){
                 tomber = true;
                 this.bas();
+            }else{
+                if(this == leGroupe.tbGr[0] || this == leGroupe.tbGr[1]){
+                    actif = false;
+                }
             }
         }
 
@@ -70,10 +75,10 @@
             this.newPos(this.pos.x -1, this.pos.y);
         }
         this.haut = function(){
-            this.newPos(this.pos.x,this.pos.y-1);
+            this.newPos(this.pos.x, this.pos.y -1);
         }
         this.bas = function(){
-            this.newPos(this.pos.x,this.pos.y+1);
+            this.newPos(this.pos.x, this.pos.y +1);
         }
 
 
@@ -119,59 +124,81 @@
             };
             switch (direction) {
                 case "droite":
-                    if(this.tbGr[j].droiteT()){
-                        this.tbGr[j].droite();
-                        this.tbGr[i].droite();
+                    if(actif){
+                        if (this.rotation == 1 || this.rotation == 3){
+                            if(this.tbGr[j].droiteT() && this.tbGr[i].droiteT()){
+                                this.tbGr[j].droite();
+                                this.tbGr[i].droite();
+                            }
+                        } else {
+                            if(this.tbGr[j].droiteT()){
+                                this.tbGr[j].droite();
+                                this.tbGr[i].droite();
+                            }
+                        }
                     }
                     break;
                 case "gauche":
-
-                    if(this.tbGr[i].gaucheT()){
-                        this.tbGr[i].gauche();
-                        this.tbGr[j].gauche();
+                if(actif){
+                    if (this.rotation == 1 || this.rotation == 3){
+                        if(this.tbGr[j].gaucheT() && this.tbGr[i].gaucheT()){
+                            this.tbGr[i].gauche();
+                            this.tbGr[j].gauche();
+                        }
+                    } else {
+                        if(this.tbGr[i].gaucheT()){
+                            this.tbGr[i].gauche();
+                            this.tbGr[j].gauche();
+                        }
                     }
-                    break;
+                }
+                break;
 
                 case "bas":
                     this.enBas(i,j);
                     break;
+
             }
+
         }
 
         this.pivoter = function(i,j){
-            switch (this.rotation) {
-                case 0:
-                    if(this.tbGr[i].basT() && this.tbGr[j].basT()){
-                        this.tbGr[j].bas();
-                        this.tbGr[j].gauche();
-                        this.rotation = 1;
-                    }
+            if(actif){
+                switch (this.rotation) {
+                    case 0:
+                        if(this.tbGr[i].basT() && this.tbGr[j].basT()){
+                            this.tbGr[j].bas();
+                            this.tbGr[j].gauche();
+                            this.rotation = 1;
+                        }
 
-                    break;
-                case 1:
-                    if(this.tbGr[i].gaucheT() && this.tbGr[j].gaucheT()){
-                        this.tbGr[j].gauche();
-                        this.tbGr[j].haut();
-                        this.rotation = 2;
-                    }
+                        break;
+                    case 1:
+                        if(this.tbGr[i].gaucheT() && this.tbGr[j].gaucheT()){
+                            this.tbGr[j].gauche();
+                            this.tbGr[j].haut();
+                            this.rotation = 2;
+                        }
 
-                    break;
+                        break;
 
-                case 2:
-                    if(this.tbGr[i].hautT() && this.tbGr[j].hautT()){
-                        this.tbGr[j].haut();
-                        this.tbGr[j].droite();
-                        this.rotation = 3;
-                    }
-                    break;
-                case 3:
-                    if(this.tbGr[i].droiteT() && this.tbGr[j].droiteT()){
-                        this.tbGr[j].droite();
-                        this.tbGr[j].bas();
-                        this.rotation = 0;
-                    }
-                    break;
+                    case 2:
+                        if(this.tbGr[i].hautT() && this.tbGr[j].hautT()){
+                            this.tbGr[j].haut();
+                            this.tbGr[j].droite();
+                            this.rotation = 3;
+                        }
+                        break;
+                    case 3:
+                        if(this.tbGr[i].droiteT() && this.tbGr[j].droiteT()){
+                            this.tbGr[j].droite();
+                            this.tbGr[j].bas();
+                            this.rotation = 0;
+                        }
+                        break;
+                }
             }
+
 
         }
 
@@ -238,6 +265,7 @@
             lesPuyosDescendusDuCiel();
             if (tomber == false){
                 leGroupe = new GroupeJoueur();
+                actif = true;
             }
             timer = Date.now();
         }
