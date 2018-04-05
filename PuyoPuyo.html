@@ -16,8 +16,8 @@
     var colorVide = "#FFFFFF";
     var colorBlock = "#B5351A";
     var dir = {x:0, y:0};
-    var cln = 14;
-    var lgn = 8;
+    var lgn = 14;
+    var cln = 8;
     var score = 0; //score du joueur
     var detection = true; //met fin à la destruction des puyos dans le jeu
     var chaine = 0; //compte le nombre de chaine pour le score
@@ -49,6 +49,7 @@
         this.type = "Puyo";
         this.color = newPuyoColor();
         this.group = inGroup;
+        this.combo = -1;
         this.check = false;
         this.pos = {x:i, y:j};
         this.newPos = function(i,j){
@@ -206,18 +207,18 @@
 
     //initialisation de notre tableau de puyo puyo
     initpuyo = function(puyo) {
-        for(var i=0;i<lgn; i++){
+        for(var i=0;i<cln; i++){
             puyo.push([]);
-            for(var j=0; j<cln; j++){
+            for(var j=0; j<lgn; j++){
                 puyo[i].push("Vide");
             }
         }
-        for(var i=0;i<cln; i++){
-            puyo[0][i] = new Block();
-            puyo[lgn-1][i] = new Block();
-        }
         for(var i=0;i<lgn; i++){
-            puyo[i][cln-1] = new Block();
+            puyo[0][i] = new Block();
+            puyo[cln-1][i] = new Block();
+        }
+        for(var i=0;i<cln; i++){
+            puyo[i][lgn-1] = new Block();
         }
     }
 
@@ -233,7 +234,7 @@
 
         if (d > timer + 500){
             tomber = false;
-            destroyCombo();
+            //destroyCombo();
             lesPuyosDescendusDuCiel();
             if (tomber == false){
                 leGroupe = new GroupeJoueur();
@@ -247,81 +248,27 @@
         ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
         majAffichagePuyos();
     }
+/////////////////////////////////////////////////
 
-//     var fin = true;
-//     function destroyCombo(fin){
-//         var fin = true;
-//         var grp = 0
-//         var counter = 0
-//         var counterTotal = 0
-//         for(var i=0;i<lgn; i++){
-//             for(var j=cln-1; j>=0; j--){
-// // Pour i de 1 à 6 faire
-// // Pour j de 1 à 12 faire
-//                 if(puyo[i][j].type = puyo){
-//                     grp ++
-//                     counterTotal = testGroupe(puyos[i][j], grp, counter)
-//                 }
-//                 if(counterTotal >= 4){
-//                     fin = false;
-//                 }
-//                 for(var u=0;u<lgn; u++){
-//                     for(var v=cln-1; v>=0; v--){
-//                         if(puyos[i][j].groupe = grp){
-//
-//                         }
-// Puyos[i][j].couleur = N
-// Puyos[i][j].groupe = 0
-// Fin Si
-// Fait
-// Fait
-// Fin Si
-// counter = 1
-// Fait
-// Fait
-// Si fin==faux alors
-// destruction(puyo[][])
-// chaine++
-// Fin Si
-// retourner chaine
-// FinAction
-// }
 
-    function testGroupe(i,j){
-        if (puyo[i][j].type == "puyo"){
-            tempoGroupe = [puyo[i][j]];
-            if(puyo[i][j].colorDroite()){
-                tempoGroupe += testGroupe(i,j+1);
-            }
-            if(puyo[i][j].colorHaut()){
-                tempoGroupe += testGroupe(i-1,j);
-            }
-            if(puyo[i][j].colorBas()){
-                tempoGroupe += testGroupe(i+1,j);
-            }
-            if(puyo[i][j].colorGauche()){
-                tempoGroupe += testGroupe(i,j-1);
-            }
-        }
-        return tempoGroupe;
+  /*  function testGroupe(i,j,combo){
 
     }
 
-    function destroyCombo(){
-        for(var i=0;i<lgn; i++){
-            for(var j=cln-1; j>=0; j--){
-                    grp = testGroupe(i,j);
-                    if ( grp.length >= 4){
-                        destroy(grp);
-                    }
-                }
-            }
-        }
-    }
+    function destroyCombo(detection){
+        detection = true;
+        var grp = 0
+        var counter = 0;
+        var counterTotal = 0;
 
+        for(var i=0, i<)
+    }*/
+
+
+//////////////////////////////////////////////
     function lesPuyosDescendusDuCiel(){
-         for(var i=0;i<lgn; i++){
-             for(var j=cln-1; j>=0; j--){
+         for(var i=0;i<cln; i++){
+             for(var j=lgn-1; j>=0; j--){
                 if(puyo[i][j].type == "Puyo"){
                     puyo[i][j].fall();
                 }
@@ -330,8 +277,8 @@
     }
 
     function majAffichagePuyos(){
-        for(var i=0;i<lgn; i++){
-            for(var j=0; j<cln; j++){
+        for(var i=0;i<cln; i++){
+            for(var j=0; j<lgn; j++){
                 ctx.beginPath();
                 switch (puyo[i][j].type) {
                     case "Block":
