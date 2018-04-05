@@ -281,18 +281,31 @@
 
     function testGroupe(unPuyo,grp,counter){
         counter ++;
-        for(var a=-1;a<=1;a+=2){
-          var lim = -(Math.abs(a)-1);
-          for(var b=-lim; b<lim+1*Math.abs(a);a+=2){
-            if(unPuyo.color == puyo[unPuyo.pos.x+a][unPuyo.pos.y+b].color
-              && puyo[unPuyo.pos.x+a][unPuyo.pos.y+b].check==false){
-                puyo[unPuyo.pos.x+a][unPuyo.pos.y+b].combo = grp;
-                puyo[unPuyo.pos.x+a][unPuyo.pos.y+b].check = true;
-                counter+= testGroupe(puyo[unPuyo.pos.x+a][unPuyo.pos.y+b], grp, counter);
-              }
+        if(unPuyo.color == puyo[unPuyo.pos.x+1][unPuyo.pos.y].color
+            && puyo[unPuyo.pos.x+1][unPuyo.pos.y].check==false){
+              puyo[unPuyo.pos.x+1][unPuyo.pos.y].combo = grp;
+              puyo[unPuyo.pos.x+1][unPuyo.pos.y].check = true;
+              counter+= testGroupe(puyo[unPuyo.pos.x+1][unPuyo.pos.y], grp, counter);
+          }
+          if(unPuyo.color == puyo[unPuyo.pos.x][unPuyo.pos.y+1].color
+            && puyo[unPuyo.pos.x][unPuyo.pos.y+1].check==false){
+              puyo[unPuyo.pos.x][unPuyo.pos.y+1].combo = grp;
+              puyo[unPuyo.pos.x][unPuyo.pos.y+1].check = true;
+              counter+= testGroupe(puyo[unPuyo.pos.x][unPuyo.pos.y+1], grp, counter);
+          }
+          if(unPuyo.color == puyo[unPuyo.pos.x-1][unPuyo.pos.y].color
+             && puyo[unPuyo.pos.x-1][unPuyo.pos.y].check==false){
+               puyo[unPuyo.pos.x-1][unPuyo.pos.y].combo = grp;
+               puyo[unPuyo.pos.x-1][unPuyo.pos.y].check = true;
+               counter+= testGroupe(puyo[unPuyo.pos.x-1][unPuyo.pos.y], grp, counter);
+          }
+          if(unPuyo.color == puyo[unPuyo.pos.x][unPuyo.pos.y-1].color
+            && puyo[unPuyo.pos.x][unPuyo.pos.y-1].check==false){
+              puyo[unPuyo.pos.x][unPuyo.pos.y-1].combo = grp;
+              puyo[unPuyo.pos.x][unPuyo.pos.y-1].check = true;
+              counter+= testGroupe(puyo[unPuyo.pos.x][unPuyo.pos.y-1], grp, counter);
           }
           return counter;
-        }
     }
 
     function destroyCombo(detection){
