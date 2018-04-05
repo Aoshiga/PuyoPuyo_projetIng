@@ -263,9 +263,12 @@
             tomber = false;
             lesPuyosDescendusDuCiel();
             if (tomber == false){
-                destroyCombo(detection);
-                leGroupe = new GroupeJoueur();
-                actif = true;
+                //destroyCombo(detection);
+                if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
+                    leGroupe = new GroupeJoueur();
+                    actif = true;
+                }
+
             }
             timer = Date.now();
         }
