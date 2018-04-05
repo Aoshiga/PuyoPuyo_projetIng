@@ -49,7 +49,7 @@
         this.type = "Puyo";
         this.color = newPuyoColor();
         this.group = inGroup;
-        this.combo = -1;
+        this.combo = 0;
         this.check = false;
         this.pos = {x:i, y:j};
         this.newPos = function(i,j){
@@ -234,9 +234,9 @@
 
         if (d > timer + 500){
             tomber = false;
-            //destroyCombo();
             lesPuyosDescendusDuCiel();
             if (tomber == false){
+                destroyCombo(detection);
                 leGroupe = new GroupeJoueur();
             }
             timer = Date.now();
@@ -251,18 +251,53 @@
 /////////////////////////////////////////////////
 
 
-  /*  function testGroupe(i,j,combo){
-
+    function testGroupe(unPuyo,grp,counter){
+        counter ++;
+        for(var a=-1;a<=1;a+=2){
+          var lim = -(Math.abs(a)-1);
+          for(var b=-lim; b<lim+1*Math.abs(a);a+=2){
+            if(unPuyo.color == puyo[unPuyo.pos.x+a][unPuyo.pos.y+b].color
+              && puyo[unPuyo.pos.x+a][unPuyo.pos.y+b].check==false){
+                puyo[unPuyo.pos.x+a][unPuyo.pos.y+b].combo = grp;
+                puyo[unPuyo.pos.x+a][unPuyo.pos.y+b].check = true;
+                counter+= testGroupe(puyo[unPuyo.pos.x+a][unPuyo.pos.y+b], grp, counter);
+              }
+          }
+          return counter;
+        }
     }
 
     function destroyCombo(detection){
         detection = true;
-        var grp = 0
+        var grp = 0;
         var counter = 0;
         var counterTotal = 0;
 
-        for(var i=0, i<)
-    }*/
+        for(var i=0;i<cln-1;i++){
+          for(var j=0;j<lgn-1;j++){
+            if(puyo[i][j].type == "Puyo"){
+              puyo[i][j].combo ++;
+              counterTotal = testGroupe(puyo[i][j], grp, counter);
+            }
+            if (counterTotal >= 4){
+              detection=false;
+              for(var i=0; i<cln-1;i++){
+                for(var j=0; j<lgn-1;j++){
+                  if(puyo[i][j].combo == grp){
+                    puyo[i][j] = "Vide";
+                    puyo[i][j].combo = 0;
+                  }
+                }
+              }
+            }
+          }
+        }
+        if(detection==false){
+          chaine++;
+          destroyCombo(detection);
+        }
+        return chaine;
+    }
 
 
 //////////////////////////////////////////////
