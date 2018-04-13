@@ -258,17 +258,15 @@
 
 
     update = function(d) {
-
         if (d > timer + 500){
             tomber = false;
             lesPuyosDescendusDuCiel();
             if (tomber == false){
-                //destroyCombo(detection);
+                destroyCombo(detection);
                 if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
                     leGroupe = new GroupeJoueur();
                     actif = true;
                 }
-
             }
             timer = Date.now();
         }
@@ -281,66 +279,92 @@
     }
 /////////////////////////////////////////////////
 
-
+/*
+*Regarde si 2 puyos côte à côte sont de la même couleur
+*counter compte le nombre de puyo qui se touche (vertical exclu)
+*la fonction renvoie se compteur
+*tout les puyos de la même couleur qui se touche ont une même valeurs de groupe
+ associé à l'attibut "combo" d'un puyo
+*/
     function testGroupe(unPuyo,grp,counter){
         counter ++;
+        unPuyo.check=true;
+        unPuyo.combo=grp;
         if(unPuyo.color == puyo[unPuyo.pos.x+1][unPuyo.pos.y].color
             && puyo[unPuyo.pos.x+1][unPuyo.pos.y].check==false){
               puyo[unPuyo.pos.x+1][unPuyo.pos.y].combo = grp;
               puyo[unPuyo.pos.x+1][unPuyo.pos.y].check = true;
-              counter+= testGroupe(puyo[unPuyo.pos.x+1][unPuyo.pos.y], grp, counter);
+              counter= testGroupe(puyo[unPuyo.pos.x+1][unPuyo.pos.y], grp, counter);
           }
           if(unPuyo.color == puyo[unPuyo.pos.x][unPuyo.pos.y+1].color
             && puyo[unPuyo.pos.x][unPuyo.pos.y+1].check==false){
               puyo[unPuyo.pos.x][unPuyo.pos.y+1].combo = grp;
               puyo[unPuyo.pos.x][unPuyo.pos.y+1].check = true;
-              counter+= testGroupe(puyo[unPuyo.pos.x][unPuyo.pos.y+1], grp, counter);
+              counter= testGroupe(puyo[unPuyo.pos.x][unPuyo.pos.y+1], grp, counter);
           }
           if(unPuyo.color == puyo[unPuyo.pos.x-1][unPuyo.pos.y].color
              && puyo[unPuyo.pos.x-1][unPuyo.pos.y].check==false){
                puyo[unPuyo.pos.x-1][unPuyo.pos.y].combo = grp;
                puyo[unPuyo.pos.x-1][unPuyo.pos.y].check = true;
-               counter+= testGroupe(puyo[unPuyo.pos.x-1][unPuyo.pos.y], grp, counter);
+               counter= testGroupe(puyo[unPuyo.pos.x-1][unPuyo.pos.y], grp, counter);
           }
           if(unPuyo.color == puyo[unPuyo.pos.x][unPuyo.pos.y-1].color
             && puyo[unPuyo.pos.x][unPuyo.pos.y-1].check==false){
               puyo[unPuyo.pos.x][unPuyo.pos.y-1].combo = grp;
               puyo[unPuyo.pos.x][unPuyo.pos.y-1].check = true;
-              counter+= testGroupe(puyo[unPuyo.pos.x][unPuyo.pos.y-1], grp, counter);
+              counter= testGroupe(puyo[unPuyo.pos.x][unPuyo.pos.y-1], grp, counter);
           }
           return counter;
     }
 
+/*
+*detruit les puyos d'un groupe si ce groupe est composé de 4 puyos ou plus
+*/
     function destroyCombo(detection){
-        detection = true;
-        var grp = 0;
+        detection = true; //relance la destruction si il y a eu des puyo détruit (nécessaire pour les chaines)
+        var grp = 1;
         var counter = 0;
         var counterTotal = 0;
 
-        for(var i=0;i<cln-1;i++){
-          for(var j=0;j<lgn-1;j++){
-            if(puyo[i][j].type == "Puyo"){
-              puyo[i][j].combo ++;
+        //on assigne dans cette boucle un groupe a chaque puyo et on regarde si ce groupe
+        //est composé de 4 puyos ou plus
+        for(var i=1;i<cln-1;i++){
+          for(var j=1;j<lgn-1;j++){
+            if(puyo[i][j].type == "Puyo" && puyo[i][j].check == false){
               counterTotal = testGroupe(puyo[i][j], grp, counter);
             }
+            //si il y a plus de 4 puyos dans un groupe, alors il disparaisse (c'est à dire prennent une valeur nulle)
             if (counterTotal >= 4){
               detection=false;
-              for(var i=0; i<cln-1;i++){
-                for(var j=0; j<lgn-1;j++){
-                  if(puyo[i][j].combo == grp){
-                    puyo[i][j] = "Vide";
-                    puyo[i][j].combo = 0;
+              for(var i=1; i<cln-1;i++){
+                for(var j=1; j<lgn-1;j++){
+                  if(puyo[i][j].type == "Puyo"){
+                    if(puyo[i][j].combo == grp){
+                      puyo[i][j] = "Vide";
+                    }
                   }
                 }
               }
             }
+            //on réinitialise le compteur de puyo et augmente la valeurs de groupes pour que ce dernier soit différent du précédent
+            counterTotal = 0;
+            grp++;
           }
         }
+
+        //On réinitialise tout les puyos à leurs états initials
+        for(var i=0;i<cln-1;i++){
+          for(var j=0;j<lgn-1;j++){
+            puyo[i][j].combo = 0;
+            puyo[i][j].check = false;
+          }
+        }
+
+        //On fait tomber les puyos et relance la destruction
         if(detection==false){
-          chaine++;
+          //lesPuyosDescendusDuCiel();
           destroyCombo(detection);
         }
-        return chaine;
     }
 
 
