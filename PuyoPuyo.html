@@ -258,15 +258,23 @@
 
 
     update = function(d) {
-        if (d > timer + 500){
+        if (d > timer + 600){
             tomber = false;
             lesPuyosDescendusDuCiel();
             if (tomber == false){
-                destroyCombo(detection);
-                if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
-                    leGroupe = new GroupeJoueur();
-                    actif = true;
+                var hey = destroyCombo();
+                if(tomber == false && hey == false){
+                    if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
+                        leGroupe = new GroupeJoueur();
+                        actif = true;
+                    }
                 }
+
+                // do{ destroyCombo();
+                //
+                // }while(tomber==true);
+
+
             }
             timer = Date.now();
         }
@@ -277,7 +285,6 @@
         ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
         majAffichagePuyos();
     }
-/////////////////////////////////////////////////
 
 /*
 *Regarde si 2 puyos côte à côte sont de la même couleur
@@ -320,8 +327,8 @@
 /*
 *detruit les puyos d'un groupe si ce groupe est composé de 4 puyos ou plus
 */
-    function destroyCombo(detection){
-        detection = true; //relance la destruction si il y a eu des puyo détruit (nécessaire pour les chaines)
+    function destroyCombo(){
+        detection = false; //relance la destruction si il y a eu des puyo détruit (nécessaire pour les chaines)
         var grp = 1;
         var counter = 0;
         var counterTotal = 0;
@@ -333,9 +340,9 @@
             if(puyo[i][j].type == "Puyo" && puyo[i][j].check == false){
               counterTotal = testGroupe(puyo[i][j], grp, counter);
             }
-            //si il y a plus de 4 puyos dans un groupe, alors il disparaisse (c'est à dire prennent une valeur nulle)
+            //si il y a plus de 4 puyos dans un groupe, alors ils disparaissent (c'est à dire prennent une valeur nulle)
             if (counterTotal >= 4){
-              detection=false;
+              detection=true;
               for(var i=1; i<cln-1;i++){
                 for(var j=1; j<lgn-1;j++){
                   if(puyo[i][j].type == "Puyo"){
@@ -359,16 +366,14 @@
             puyo[i][j].check = false;
           }
         }
+        /*if(detection==true){
+            destroyCombo();
+        }*/
+        return detection;
 
-        //On fait tomber les puyos et relance la destruction
-        if(detection==false){
-          //lesPuyosDescendusDuCiel();
-          destroyCombo(detection);
-        }
     }
 
 
-//////////////////////////////////////////////
     function lesPuyosDescendusDuCiel(){
          for(var i=0;i<cln; i++){
              for(var j=lgn-1; j>=0; j--){
