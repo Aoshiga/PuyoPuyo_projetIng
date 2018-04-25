@@ -12,6 +12,9 @@
     /**
     *Les constantes, les variables et les structures de PuyoPuyo
     */
+    var chainScore = [0,8,16,32,64,128,256,512];
+    var colorBonus = [0,3,6,12,24];
+    var col = [];
     var actif = true;
     var tomber = false;
     var colorVide = "#FFFFFF";
@@ -48,7 +51,7 @@
 
     function Puyo(i,j, inGroup=-1){
         this.type = "Puyo";
-        this.color = newPuyoColor();
+        this.color = col[inGroup];
         this.group = inGroup;
         this.combo = 0;
         this.check = false;
@@ -203,14 +206,18 @@
         }
 
         this.enBas = function(i,j){
-            this.tbGr[j].fall();
-            this.tbGr[i].fall();
+            if (detection==false){
+                this.tbGr[j].fall();
+                this.tbGr[i].fall();
+            }
+
 
         }
     }
 
-    function newPuyoColor(){;
-        return tabColor[Math.floor(Math.random()*5)];
+    function nextColor(){
+        col[0] = tabColor[Math.floor(Math.random()*5)];
+        col[1] = tabColor[Math.floor(Math.random()*5)];
     }
 
     // initialisation (appelée au chargement du corps du document <body onload="init">)
@@ -227,13 +234,16 @@
         // --> ces événements vont appeler les fonctions captureXYZ définies après.
         // initialisation du tableau
         initpuyo(puyo);
+
         timer = Date.now();
         // lancement de la boucle de jeu
+
         boucleDeJeu();
     }
 
     //initialisation de notre tableau de puyo puyo
     initpuyo = function(puyo) {
+        nextColor();
         for(var i=0;i<cln; i++){
             puyo.push([]);
             for(var j=0; j<lgn; j++){
@@ -262,17 +272,14 @@
             tomber = false;
             lesPuyosDescendusDuCiel();
             if (tomber == false){
-                var hey = destroyCombo();
-                if(tomber == false && hey == false){
+                destroyCombo()
+                if(tomber == false && detection == false){
                     if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
                         leGroupe = new GroupeJoueur();
                         actif = true;
+                        nextColor();
                     }
                 }
-
-                // do{ destroyCombo();
-                //
-                // }while(tomber==true);
 
 
             }
@@ -284,6 +291,7 @@
     render = function() {
         ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
         majAffichagePuyos();
+        majNextColor();
     }
 
 /*
@@ -366,10 +374,6 @@
             puyo[i][j].check = false;
           }
         }
-        /*if(detection==true){
-            destroyCombo();
-        }*/
-        return detection;
 
     }
 
@@ -408,6 +412,21 @@
                 ctx.fill();
             }
         }
+    }
+
+    function majNextColor(){
+        ctx.beginPath();
+        ctx.fillStyle = col[0];
+        ctx.arc(25+50*7,25+50*2,20,0,2*Math.PI);
+        ctx.stroke();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = col[1];
+        ctx.arc(25+50*7,25+50*1,20,0,2*Math.PI);
+        ctx.stroke();
+        ctx.fill();
+
     }
 
     captureAppuiToucheClavier = function(event) {
