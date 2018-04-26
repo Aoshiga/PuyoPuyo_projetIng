@@ -12,8 +12,9 @@
     /**
     *Les constantes, les variables et les structures de PuyoPuyo
     */
+    var score = 1;
     var chainScore = [0,8,16,32,64,128,256,512];
-    var colorBonus = [0,3,6,12,24];
+    //var colorBonus = [0,3,6,12,24];
     var col = [];
     var actif = true;
     var tomber = false;
@@ -255,6 +256,7 @@
             puyo[cln-1][i] = new Block();
         }
         for(var i=0;i<cln; i++){
+            puyo[i][0] = new Block();
             puyo[i][lgn-1] = new Block();
         }
     }
@@ -268,11 +270,12 @@
 
 
     update = function(d) {
-        if (d > timer + 600){
+        if (d > timer + 200){
             tomber = false;
             lesPuyosDescendusDuCiel();
             if (tomber == false){
-                destroyCombo()
+                destroyCombo();
+                //updateScore();
                 if(tomber == false && detection == false){
                     if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
                         leGroupe = new GroupeJoueur();
@@ -292,6 +295,7 @@
         ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
         majAffichagePuyos();
         majNextColor();
+        majAffichageScore();
     }
 
 /*
@@ -377,6 +381,11 @@
 
     }
 
+
+    function majAffichageScore(){
+        ctx.font = "30px Arial";
+        ctx.fillText("Score:",10,50);
+    }
 
     function lesPuyosDescendusDuCiel(){
          for(var i=0;i<cln; i++){
