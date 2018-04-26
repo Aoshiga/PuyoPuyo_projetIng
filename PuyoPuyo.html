@@ -1,0 +1,472 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>PuyoPuyo</title>
+    <script>
+    var ctx = null;
+
+    var clic = { x: 0, y: 0 };
+
+    /**
+    *Les constantes, les variables et les structures de PuyoPuyo
+    */
+    var score = 1;
+    var chainScore = [0,8,16,32,64,128,256,512];
+    //var colorBonus = [0,3,6,12,24];
+    var col = [];
+    var actif = true;
+    var tomber = false;
+    var colorVide = "#FFFFFF";
+    var colorBlock = "#B5351A";
+    var dir = {x:0, y:0};
+    var lgn = 14;
+    var cln = 8;
+    var score = 0; //score du joueur
+    var detection = true; //met fin à la destruction des puyos dans le jeu
+    var chaine = 0; //compte le nombre de chaine pour le score
+    var puyo; //tableau de jeu
+    var speed = 10;
+    var tabColor = ["#FF0000" /*rouge*/, "#00FF00" /*vert*/, "#0000FF" /*bleu*/, "#FF00FF" /*violet*/, "#FFFF00" /*jaune*/];
+    var puyo = [];
+    var timer ;
+    var legroupe;
+    var suite = 0;
+    /**
+    *objet puyo
+    */
+
+    function majPuyo(newP,oldP,lepuyo){
+        puyo[newP.x][newP.y] = lepuyo;
+        puyo[newP.x][newP.y].pos = newP;
+        puyo[oldP.x][oldP.y] = "Vide";
+        if(lepuyo.group != -1){
+            leGroupe.tbGr[lepuyo.group] = lepuyo;
+        }
+    }
+
+    function Block(){
+        this.type = "Block";
+    }
+
+    function Puyo(i,j, inGroup=-1){
+        this.type = "Puyo";
+        this.color = col[inGroup];
+        this.group = inGroup;
+        this.combo = 0;
+        this.check = false;
+        this.pos = {x:i, y:j};
+        this.newPos = function(i,j){
+            majPuyo({x:i, y:j},this.pos,this);
+        }
+        this.fall = function(){
+            if(this.basT()){
+                tomber = true;
+                this.bas();
+            }else{
+                if(this == leGroupe.tbGr[0] || this == leGroupe.tbGr[1]){
+                    actif = false;
+                }
+            }
+        }
+
+
+        this.droite = function(){
+            this.newPos(this.pos.x +1, this.pos.y);
+        }
+        this.gauche = function(){
+            this.newPos(this.pos.x -1, this.pos.y);
+        }
+        this.haut = function(){
+            this.newPos(this.pos.x, this.pos.y -1);
+        }
+        this.bas = function(){
+            this.newPos(this.pos.x, this.pos.y +1);
+        }
+
+
+
+        this.droiteT = function(){
+            if (puyo[this.pos.x +1][this.pos.y] == "Vide"){
+                return true;
+            }
+            return false;
+        }
+        this.gaucheT = function(){
+            if (puyo[this.pos.x -1][this.pos.y] == "Vide"){
+                return true;
+            }
+            return false;
+        }
+        this.hautT = function(){
+            if (puyo[this.pos.x][this.pos.y-1] == "Vide"){
+                return true;
+            }
+            return false;
+        }
+        this.basT = function(){
+            if (puyo[this.pos.x][this.pos.y+1] == "Vide"){
+                return true;
+            }
+            return false;
+        }
+
+    }
+
+
+    function GroupeJoueur(){
+        this.type = "groupe";
+        this.rotation = 0;
+        puyo[3][0] = new Puyo(3,0,0);
+        puyo[4][0] = new Puyo(4,0,1);
+        this.tbGr = [puyo[3][0],puyo[4][0]];
+        this.go = function(direction, i=0, j=1){
+            if(this.rotation >= 2){
+                i=1;
+                j=0
+            };
+            switch (direction) {
+                case "droite":
+                    if(actif){
+                        if (this.rotation == 1 || this.rotation == 3){
+                            if(this.tbGr[j].droiteT() && this.tbGr[i].droiteT()){
+                                this.tbGr[j].droite();
+                                this.tbGr[i].droite();
+                            }
+                        } else {
+                            if(this.tbGr[j].droiteT()){
+                                this.tbGr[j].droite();
+                                this.tbGr[i].droite();
+                            }
+                        }
+                    }
+                    break;
+                case "gauche":
+                if(actif){
+                    if (this.rotation == 1 || this.rotation == 3){
+                        if(this.tbGr[j].gaucheT() && this.tbGr[i].gaucheT()){
+                            this.tbGr[i].gauche();
+                            this.tbGr[j].gauche();
+                        }
+                    } else {
+                        if(this.tbGr[i].gaucheT()){
+                            this.tbGr[i].gauche();
+                            this.tbGr[j].gauche();
+                        }
+                    }
+                }
+                break;
+
+                case "bas":
+                    this.enBas(i,j);
+                    break;
+
+            }
+
+        }
+
+        this.pivoter = function(i,j){
+            if(actif){
+                switch (this.rotation) {
+                    case 0:
+                        if(this.tbGr[i].basT() && this.tbGr[j].basT()){
+                            this.tbGr[j].bas();
+                            this.tbGr[j].gauche();
+                            this.rotation = 1;
+                        }
+
+                        break;
+                    case 1:
+                        if(this.tbGr[i].gaucheT() && this.tbGr[j].gaucheT()){
+                            this.tbGr[j].gauche();
+                            this.tbGr[j].haut();
+                            this.rotation = 2;
+                        }
+
+                        break;
+
+                    case 2:
+                        if(this.tbGr[i].hautT() && this.tbGr[j].hautT()){
+                            this.tbGr[j].haut();
+                            this.tbGr[j].droite();
+                            this.rotation = 3;
+                        }
+                        break;
+                    case 3:
+                        if(this.tbGr[i].droiteT() && this.tbGr[j].droiteT()){
+                            this.tbGr[j].droite();
+                            this.tbGr[j].bas();
+                            this.rotation = 0;
+                        }
+                        break;
+                }
+            }
+
+
+        }
+
+        this.enBas = function(i,j){
+            if (detection==false){
+                this.tbGr[j].fall();
+                this.tbGr[i].fall();
+            }
+
+
+        }
+    }
+
+    function nextColor(){
+        col[0] = tabColor[Math.floor(Math.random()*5)];
+        col[1] = tabColor[Math.floor(Math.random()*5)];
+    }
+
+    // initialisation (appelée au chargement du corps du document <body onload="init">)
+    function init() {
+        // instanciation de la variable globale contenant le ctxe
+        ctx = document.getElementById("cvs").getContext("2d");
+        ctx.width = document.getElementById("cvs").width;
+        ctx.height = document.getElementById("cvs").height;
+
+        // on associe au document des écouteurs d'événements
+        document.addEventListener("keydown", captureAppuiToucheClavier) // 2 écouteurs pour le clavier (appui/relâchement d'une touche)
+        document.addEventListener("keyup", captureRelacheToucheClavier) // on associe au document un écouteur d'événements souris
+        document.addEventListener("click", captureClicSouris)
+        // --> ces événements vont appeler les fonctions captureXYZ définies après.
+        // initialisation du tableau
+        initpuyo(puyo);
+
+        timer = Date.now();
+        // lancement de la boucle de jeu
+
+        boucleDeJeu();
+    }
+
+    //initialisation de notre tableau de puyo puyo
+    initpuyo = function(puyo) {
+        nextColor();
+        for(var i=0;i<cln; i++){
+            puyo.push([]);
+            for(var j=0; j<lgn; j++){
+                puyo[i].push("Vide");
+            }
+        }
+        for(var i=0;i<lgn; i++){
+            puyo[0][i] = new Block();
+            puyo[cln-1][i] = new Block();
+        }
+        for(var i=0;i<cln; i++){
+            puyo[i][0] = new Block();
+            puyo[i][lgn-1] = new Block();
+        }
+    }
+
+    boucleDeJeu = function() {
+        update(Date.now());
+        render();
+        requestAnimationFrame(boucleDeJeu);
+
+    }
+
+
+    update = function(d) {
+        if (d > timer + 200){
+            tomber = false;
+            lesPuyosDescendusDuCiel();
+            if (tomber == false){
+                destroyCombo();
+                //updateScore();
+                if(tomber == false && detection == false){
+                    if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
+                        leGroupe = new GroupeJoueur();
+                        actif = true;
+                        nextColor();
+                    }
+                }
+
+
+            }
+            timer = Date.now();
+        }
+    }
+
+
+    render = function() {
+        ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
+        majAffichagePuyos();
+        majNextColor();
+        majAffichageScore();
+    }
+
+/*
+*Regarde si 2 puyos côte à côte sont de la même couleur
+*counter compte le nombre de puyo qui se touche (vertical exclu)
+*la fonction renvoie se compteur
+*tout les puyos de la même couleur qui se touche ont une même valeurs de groupe
+ associé à l'attibut "combo" d'un puyo
+*/
+    function testGroupe(unPuyo,grp,counter){
+        counter ++;
+        unPuyo.check=true;
+        unPuyo.combo=grp;
+        if(unPuyo.color == puyo[unPuyo.pos.x+1][unPuyo.pos.y].color
+            && puyo[unPuyo.pos.x+1][unPuyo.pos.y].check==false){
+              puyo[unPuyo.pos.x+1][unPuyo.pos.y].combo = grp;
+              puyo[unPuyo.pos.x+1][unPuyo.pos.y].check = true;
+              counter= testGroupe(puyo[unPuyo.pos.x+1][unPuyo.pos.y], grp, counter);
+          }
+          if(unPuyo.color == puyo[unPuyo.pos.x][unPuyo.pos.y+1].color
+            && puyo[unPuyo.pos.x][unPuyo.pos.y+1].check==false){
+              puyo[unPuyo.pos.x][unPuyo.pos.y+1].combo = grp;
+              puyo[unPuyo.pos.x][unPuyo.pos.y+1].check = true;
+              counter= testGroupe(puyo[unPuyo.pos.x][unPuyo.pos.y+1], grp, counter);
+          }
+          if(unPuyo.color == puyo[unPuyo.pos.x-1][unPuyo.pos.y].color
+             && puyo[unPuyo.pos.x-1][unPuyo.pos.y].check==false){
+               puyo[unPuyo.pos.x-1][unPuyo.pos.y].combo = grp;
+               puyo[unPuyo.pos.x-1][unPuyo.pos.y].check = true;
+               counter= testGroupe(puyo[unPuyo.pos.x-1][unPuyo.pos.y], grp, counter);
+          }
+          if(unPuyo.color == puyo[unPuyo.pos.x][unPuyo.pos.y-1].color
+            && puyo[unPuyo.pos.x][unPuyo.pos.y-1].check==false){
+              puyo[unPuyo.pos.x][unPuyo.pos.y-1].combo = grp;
+              puyo[unPuyo.pos.x][unPuyo.pos.y-1].check = true;
+              counter= testGroupe(puyo[unPuyo.pos.x][unPuyo.pos.y-1], grp, counter);
+          }
+          return counter;
+    }
+
+/*
+*detruit les puyos d'un groupe si ce groupe est composé de 4 puyos ou plus
+*/
+    function destroyCombo(){
+        detection = false; //relance la destruction si il y a eu des puyo détruit (nécessaire pour les chaines)
+        var grp = 1;
+        var counter = 0;
+        var counterTotal = 0;
+
+        //on assigne dans cette boucle un groupe a chaque puyo et on regarde si ce groupe
+        //est composé de 4 puyos ou plus
+        for(var i=1;i<cln-1;i++){
+          for(var j=1;j<lgn-1;j++){
+            if(puyo[i][j].type == "Puyo" && puyo[i][j].check == false){
+              counterTotal = testGroupe(puyo[i][j], grp, counter);
+            }
+            //si il y a plus de 4 puyos dans un groupe, alors ils disparaissent (c'est à dire prennent une valeur nulle)
+            if (counterTotal >= 4){
+              detection=true;
+              for(var i=1; i<cln-1;i++){
+                for(var j=1; j<lgn-1;j++){
+                  if(puyo[i][j].type == "Puyo"){
+                    if(puyo[i][j].combo == grp){
+                      puyo[i][j] = "Vide";
+                    }
+                  }
+                }
+              }
+            }
+            //on réinitialise le compteur de puyo et augmente la valeurs de groupes pour que ce dernier soit différent du précédent
+            counterTotal = 0;
+            grp++;
+          }
+        }
+
+        //On réinitialise tout les puyos à leurs états initials
+        for(var i=0;i<cln-1;i++){
+          for(var j=0;j<lgn-1;j++){
+            puyo[i][j].combo = 0;
+            puyo[i][j].check = false;
+          }
+        }
+
+    }
+
+
+    function majAffichageScore(){
+        ctx.font = "30px Arial";
+        ctx.fillText("Score:",10,50);
+    }
+
+    function lesPuyosDescendusDuCiel(){
+         for(var i=0;i<cln; i++){
+             for(var j=lgn-1; j>=0; j--){
+                if(puyo[i][j].type == "Puyo"){
+                    puyo[i][j].fall();
+                }
+            }
+        }
+    }
+
+    function majAffichagePuyos(){
+        for(var i=0;i<cln; i++){
+            for(var j=0; j<lgn; j++){
+                ctx.beginPath();
+                switch (puyo[i][j].type) {
+                    case "Block":
+                        ctx.fillStyle = colorBlock;
+                        ctx.fillRect (50*i,50*j, 50, 50);
+                        break;
+
+                    case "Puyo":
+                        ctx.fillStyle = puyo[i][j].color;
+                        ctx.arc(25+50*i,25+50*j,20,0,2*Math.PI);
+                        break;
+
+                    default:
+                        ctx.fillStyle = "White";//puyo[i][j].couleur;
+                        ctx.arc(25+50*i,25+50*j,20,0,2*Math.PI);
+
+                }
+                ctx.stroke();
+                ctx.fill();
+            }
+        }
+    }
+
+    function majNextColor(){
+        ctx.beginPath();
+        ctx.fillStyle = col[0];
+        ctx.arc(25+50*7,25+50*2,20,0,2*Math.PI);
+        ctx.stroke();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = col[1];
+        ctx.arc(25+50*7,25+50*1,20,0,2*Math.PI);
+        ctx.stroke();
+        ctx.fill();
+
+    }
+
+    captureAppuiToucheClavier = function(event) {
+        if (event.keyCode==37){
+            leGroupe.go("gauche");
+        }
+        if (event.keyCode==38){
+            leGroupe.pivoter(0,1);
+        }
+        if (event.keyCode==39){
+            leGroupe.go("droite");
+        }
+        if (event.keyCode==40){
+            leGroupe.go("bas");
+        }
+    }
+
+    captureRelacheToucheClavier = function(event) {
+    }
+
+    captureClicSouris = function(event) {
+        // calcul des coordonnées de la souris dans le canvas
+    }
+
+    </script>
+</head>
+
+<body onload="init()">
+
+    <canvas id="cvs" width="400" height="700" style="margin: 10px auto; border: solid 1px #000;"></canvas>
+
+</body>
+
+</html>
