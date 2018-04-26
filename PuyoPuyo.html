@@ -32,6 +32,7 @@
     var timer ;
     var legroupe;
     var suite = 0;
+    var playPause = true; //lance le jeu ou le met en pause
     /**
     *objet puyo
     */
@@ -263,35 +264,38 @@
         update(Date.now());
         render();
         requestAnimationFrame(boucleDeJeu);
-
     }
 
 
     update = function(d) {
-        if (d > timer + 600){
-            tomber = false;
-            lesPuyosDescendusDuCiel();
-            if (tomber == false){
-                destroyCombo()
-                if(tomber == false && detection == false){
-                    if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
-                        leGroupe = new GroupeJoueur();
-                        actif = true;
-                        nextColor();
+        if(playPause==false){
+            if (d > timer + 500){
+                tomber = false;
+                lesPuyosDescendusDuCiel();
+                if (tomber == false){
+                    destroyCombo()
+                    if(tomber == false && detection == false){
+                        if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
+                            leGroupe = new GroupeJoueur();
+                            actif = true;
+                            nextColor();
+                        }
                     }
                 }
-
-
+                timer = Date.now();
             }
-            timer = Date.now();
         }
     }
 
 
     render = function() {
         ctx.clearRect(0, 0, ctx.width, ctx.height); // effacement de l'écran
-        majAffichagePuyos();
-        majNextColor();
+        if(playPause==false){
+            majAffichagePuyos();
+            majNextColor();
+        }else{
+            majMenu();
+        }
     }
 
 /*
@@ -426,22 +430,47 @@
         ctx.arc(25+50*7,25+50*1,20,0,2*Math.PI);
         ctx.stroke();
         ctx.fill();
+    }
 
+    /*
+    *fonction qui permet au joueur de mettre pause/menu du jeu
+    */
+    function majMenu(){
+        ctx.beginPath();
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0,0,400,700);
+        ctx.fill();
+
+        ctx.font = "40px Arial";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.textAlign="center";
+        ctx.fillText("New Super Puyo-Puyo World 18",200,100,400);
+        ctx.fillText("#noFake #Prank #lifeIsPotatoes",200,150,400);
+        ctx.fillText("Press Space to continue",200,350,400);
     }
 
     captureAppuiToucheClavier = function(event) {
-        if (event.keyCode==37){
-            leGroupe.go("gauche");
-        }
-        if (event.keyCode==38){
-            leGroupe.pivoter(0,1);
-        }
-        if (event.keyCode==39){
-            leGroupe.go("droite");
-        }
-        if (event.keyCode==40){
-            leGroupe.go("bas");
-        }
+        switch (event.keyCode){
+            case 37:
+                leGroupe.go("gauche");
+                break;
+            case 38:
+                leGroupe.go("haut");
+                leGroupe.pivoter(0,1);
+                break;
+            case 39:
+                leGroupe.go("droite");
+                break;
+            case 40:
+                leGroupe.go("bas");
+                break;
+            case 32:
+                if (playPause){
+                    playPause=false;
+                }else{
+                    playPause=true;
+                }
+          }
     }
 
     captureRelacheToucheClavier = function(event) {
