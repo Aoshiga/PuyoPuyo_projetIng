@@ -12,6 +12,8 @@
     /**
     *Les constantes, les variables et les structures de PuyoPuyo
     */
+    var puyoInChain = 0;
+    var chainPower = 0;
     var score = 1;
     var chainScore = [0,8,16,32,64,128,256,512];
     //var colorBonus = [0,3,6,12,24];
@@ -259,6 +261,8 @@
             puyo[i][0] = new Block();
             puyo[i][lgn-1] = new Block();
         }
+        puyo[4][0] = ("Vide");
+        puyo[3][0] = ("Vide");
     }
 
     boucleDeJeu = function() {
@@ -270,13 +274,16 @@
 
 
     update = function(d) {
-        if (d > timer + 200){
+        if (d > timer + 500){
             tomber = false;
             lesPuyosDescendusDuCiel();
             if (tomber == false){
-                destroyCombo();
-                //updateScore();
+                puyoInChain += destroyCombo();
+                chainPower ++;
                 if(tomber == false && detection == false){
+                    updateScore();
+                    chainPower = 0;
+                    puyoInChain = 0;
                     if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
                         leGroupe = new GroupeJoueur();
                         actif = true;
@@ -336,6 +343,11 @@
           return counter;
     }
 
+    function updateScore(){
+        score += (puyoInChain*10)*(1+chainScore[chainPower]);
+    }
+
+
 /*
 *detruit les puyos d'un groupe si ce groupe est composé de 4 puyos ou plus
 */
@@ -366,6 +378,7 @@
               }
             }
             //on réinitialise le compteur de puyo et augmente la valeurs de groupes pour que ce dernier soit différent du précédent
+            var tempScore = counterTotal;
             counterTotal = 0;
             grp++;
           }
@@ -378,13 +391,14 @@
             puyo[i][j].check = false;
           }
         }
-
+        return tempScore;
     }
 
 
     function majAffichageScore(){
-        ctx.font = "30px Arial";
-        ctx.fillText("Score:",10,50);
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "White";
+        ctx.fillText("Score: "+score,10,30);
     }
 
     function lesPuyosDescendusDuCiel(){
