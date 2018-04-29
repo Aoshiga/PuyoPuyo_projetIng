@@ -12,6 +12,8 @@
     /**
     *Les constantes, les variables et les structures de PuyoPuyo
     */
+    var tempo;
+    var livepos = 0
     var puyoInChain = 0;
     var groupBonus = 0;
     var chainPower = 0;
@@ -217,6 +219,14 @@
 
 
         }
+
+        this.possede = function(unPuyo){
+          if (this.tbGr[0] == unPuyo || this.tbGr[1] == unPuyo){
+            return true;
+          } else{
+            return false;
+          }
+        }
     }
 
     function nextColor(){
@@ -275,29 +285,34 @@
 
 
     update = function(d) {
-        if (d > timer + 500){
-            tomber = false;
-            lesPuyosDescendusDuCiel();
-            if (tomber == false){
-                puyoInCombo = destroyCombo();
-                puyoInChain += puyoInCombo;
-                groupBonus += puyoInCombo-3;
-                chainPower ++;
-                if(tomber == false && detection == false){
-                    updateScore();
-                    chainPower = 0;
-                    puyoInChain = 0;
-                    groupBonus = 0;
-                    if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
-                        leGroupe = new GroupeJoueur();
-                        actif = true;
-                        nextColor();
+        tempo = d;
+        if (tempo > timer + 10){
+            livepos+=1.8;
+            if (tempo > timer + 10*50){
+              livepos = 0;
+                tomber = false;
+                lesPuyosDescendusDuCiel();
+                if (tomber == false){
+                    puyoInCombo = destroyCombo();
+                    puyoInChain += puyoInCombo;
+                    groupBonus += puyoInCombo-3;
+                    chainPower ++;
+                    if(tomber == false && detection == false){
+                        updateScore();
+                        chainPower = 0;
+                        puyoInChain = 0;
+                        groupBonus = 0;
+                        if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
+                            leGroupe = new GroupeJoueur();
+                            actif = true;
+                            nextColor();
+                        }
                     }
+
+
                 }
-
-
+                timer = Date.now();
             }
-            timer = Date.now();
         }
     }
 
@@ -427,7 +442,12 @@
 
                     case "Puyo":
                         ctx.fillStyle = puyo[i][j].color;
-                        ctx.arc(25+50*i,25+50*j,20,0,2*Math.PI);
+                        if(leGroupe.possede(puyo[i][j]) && puyo[i][j].basT()){
+                            ctx.arc(25+50*i,25+50*j+livepos,24,0,2*Math.PI);
+                        }else {
+                            ctx.arc(25+50*i,25+50*j,24,0,2*Math.PI);
+                        }
+
                         break;
 
                     // default:
