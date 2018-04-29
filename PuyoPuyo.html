@@ -287,8 +287,8 @@
     update = function(d) {
         tempo = d;
         if (tempo > timer + 10){
-            livepos+=1.8;
-            if (tempo > timer + 10*50){
+            livepos+=1/(speed/100);
+            if (tempo > timer + 10*speed){
               livepos = 0;
                 tomber = false;
                 lesPuyosDescendusDuCiel();
