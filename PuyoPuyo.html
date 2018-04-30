@@ -275,7 +275,7 @@
 
 
     update = function(d) {
-        if (d > timer + 500){
+        if (d > timer + 600){
             tomber = false;
             lesPuyosDescendusDuCiel();
             if (tomber == false){
@@ -321,30 +321,30 @@
         unPuyo.check=true;
         unPuyo.combo=grp;
         if(unPuyo.color == puyo[unPuyo.pos.x+1][unPuyo.pos.y].color
-            && puyo[unPuyo.pos.x+1][unPuyo.pos.y].check==false){
+           && puyo[unPuyo.pos.x+1][unPuyo.pos.y].check==false){
               puyo[unPuyo.pos.x+1][unPuyo.pos.y].combo = grp;
               puyo[unPuyo.pos.x+1][unPuyo.pos.y].check = true;
               counter= testGroupe(puyo[unPuyo.pos.x+1][unPuyo.pos.y], grp, counter);
-          }
-          if(unPuyo.color == puyo[unPuyo.pos.x][unPuyo.pos.y+1].color
-            && puyo[unPuyo.pos.x][unPuyo.pos.y+1].check==false){
+        }
+        if(unPuyo.color == puyo[unPuyo.pos.x][unPuyo.pos.y+1].color
+           && puyo[unPuyo.pos.x][unPuyo.pos.y+1].check==false){
               puyo[unPuyo.pos.x][unPuyo.pos.y+1].combo = grp;
               puyo[unPuyo.pos.x][unPuyo.pos.y+1].check = true;
               counter= testGroupe(puyo[unPuyo.pos.x][unPuyo.pos.y+1], grp, counter);
-          }
-          if(unPuyo.color == puyo[unPuyo.pos.x-1][unPuyo.pos.y].color
-             && puyo[unPuyo.pos.x-1][unPuyo.pos.y].check==false){
-               puyo[unPuyo.pos.x-1][unPuyo.pos.y].combo = grp;
-               puyo[unPuyo.pos.x-1][unPuyo.pos.y].check = true;
-               counter= testGroupe(puyo[unPuyo.pos.x-1][unPuyo.pos.y], grp, counter);
-          }
-          if(unPuyo.color == puyo[unPuyo.pos.x][unPuyo.pos.y-1].color
-            && puyo[unPuyo.pos.x][unPuyo.pos.y-1].check==false){
+        }
+        if(unPuyo.color == puyo[unPuyo.pos.x-1][unPuyo.pos.y].color
+           && puyo[unPuyo.pos.x-1][unPuyo.pos.y].check==false){
+              puyo[unPuyo.pos.x-1][unPuyo.pos.y].combo = grp;
+              puyo[unPuyo.pos.x-1][unPuyo.pos.y].check = true;
+              counter= testGroupe(puyo[unPuyo.pos.x-1][unPuyo.pos.y], grp, counter);
+        }
+        if(unPuyo.color == puyo[unPuyo.pos.x][unPuyo.pos.y-1].color
+           && puyo[unPuyo.pos.x][unPuyo.pos.y-1].check==false){
               puyo[unPuyo.pos.x][unPuyo.pos.y-1].combo = grp;
               puyo[unPuyo.pos.x][unPuyo.pos.y-1].check = true;
               counter= testGroupe(puyo[unPuyo.pos.x][unPuyo.pos.y-1], grp, counter);
-          }
-          return counter;
+        }
+        return counter;
     }
 
     function updateScore(){
@@ -431,7 +431,7 @@
                         break;
 
                     default:
-                        ctx.fillStyle = "White";//puyo[i][j].couleur;
+                        ctx.fillStyle = "White";
                         ctx.arc(25+50*i,25+50*j,20,0,2*Math.PI);
 
                 }
