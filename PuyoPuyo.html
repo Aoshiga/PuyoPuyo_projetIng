@@ -33,7 +33,7 @@
     var detection = true; //met fin à la destruction des puyos dans le jeu
     var chaine = 0; //compte le nombre de chaine pour le score
     var puyo; //tableau de jeu
-    var speed = 20;
+    var speed = 50;
     var tabColor = ["#FF0000" /*rouge*/, "#00FF00" /*vert*/, "#0000FF" /*bleu*/, "#FF00FF" /*violet*/, "#FFFF00" /*jaune*/];
     var puyo = [];
     var timer ;
@@ -246,8 +246,7 @@
 
         // on associe au document des écouteurs d'événements
         document.addEventListener("keydown", captureAppuiToucheClavier) // 2 écouteurs pour le clavier (appui/relâchement d'une touche)
-        document.addEventListener("keyup", captureRelacheToucheClavier) // on associe au document un écouteur d'événements souris
-        document.addEventListener("click", captureClicSouris)
+
         // --> ces événements vont appeler les fonctions captureXYZ définies après.
         // initialisation du tableau
         initpuyo(puyo);
@@ -289,7 +288,7 @@
 
     update = function() {
         timer++;
-        livepos+=1/speed*50;
+        livepos+=1/speed*sizeB.x;
         // if (timer >= 10){
         //     console.log(timer);
         //     livepos+=0.50;
@@ -420,9 +419,9 @@
 
 
     function majAffichageScore(){
-        ctx.font = "20px Arial";
+        ctx.font = ""+(sizeB.x/2)+"px";
         ctx.fillStyle = "White";
-        ctx.fillText("Score: "+score,10,30);
+        ctx.fillText("Score: "+score,sizeB.x/5,sizeB.y/2);
     }
 
     function lesPuyosDescendusDuCiel(){
@@ -465,13 +464,13 @@
     function majNextColor(){
         ctx.beginPath();
         ctx.fillStyle = col[0];
-        ctx.arc(25+50*7,25+50*2,20,0,2*Math.PI);
+        ctx.arc(sizeB.x/2+sizeB.x*7,sizeB.y/2+sizeB.y*2,sizeB.x/2-2,0,2*Math.PI);
         ctx.stroke();
         ctx.fill();
 
         ctx.beginPath();
         ctx.fillStyle = col[1];
-        ctx.arc(25+50*7,25+50*1,20,0,2*Math.PI);
+        ctx.arc(sizeB.x/2+sizeB.x*7,sizeB.y/2+sizeB.y*1,sizeB.x/2-2,0,2*Math.PI);
         ctx.stroke();
         ctx.fill();
 
@@ -492,12 +491,6 @@
         }
     }
 
-    captureRelacheToucheClavier = function(event) {
-    }
-
-    captureClicSouris = function(event) {
-        // calcul des coordonnées de la souris dans le canvas
-    }
 
     </script>
 </head>
