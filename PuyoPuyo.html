@@ -12,7 +12,8 @@
     /**
     *Les constantes, les variables et les structures de PuyoPuyo
     */
-    var tempo;
+
+    var sizeB = {x:0, y:0};
     var livepos = 0
     var puyoInChain = 0;
     var groupBonus = 0;
@@ -32,7 +33,7 @@
     var detection = true; //met fin à la destruction des puyos dans le jeu
     var chaine = 0; //compte le nombre de chaine pour le score
     var puyo; //tableau de jeu
-    var speed = 10;
+    var speed = 20;
     var tabColor = ["#FF0000" /*rouge*/, "#00FF00" /*vert*/, "#0000FF" /*bleu*/, "#FF00FF" /*violet*/, "#FFFF00" /*jaune*/];
     var puyo = [];
     var timer ;
@@ -239,7 +240,9 @@
         // instanciation de la variable globale contenant le ctxe
         ctx = document.getElementById("cvs").getContext("2d");
         ctx.width = document.getElementById("cvs").width;
+        sizeB.x = ctx.width/8;
         ctx.height = document.getElementById("cvs").height;
+        sizeB.y = ctx.height/14
 
         // on associe au document des écouteurs d'événements
         document.addEventListener("keydown", captureAppuiToucheClavier) // 2 écouteurs pour le clavier (appui/relâchement d'une touche)
@@ -249,7 +252,7 @@
         // initialisation du tableau
         initpuyo(puyo);
 
-        timer = Date.now();
+        timer = 0;
         // lancement de la boucle de jeu
 
         boucleDeJeu();
@@ -277,18 +280,20 @@
     }
 
     boucleDeJeu = function() {
-        update(Date.now());
+        update();
         render();
         requestAnimationFrame(boucleDeJeu);
 
     }
 
 
-    update = function(d) {
-        tempo = d;
-        if (tempo > timer + 10){
-            livepos+=1/(speed/100);
-            if (tempo > timer + 10*speed){
+    update = function() {
+        timer++;
+        livepos+=1/speed*50;
+        // if (timer >= 10){
+        //     console.log(timer);
+        //     livepos+=0.50;
+            if (timer == speed){
               livepos = 0;
                 tomber = false;
                 lesPuyosDescendusDuCiel();
@@ -311,9 +316,9 @@
 
 
                 }
-                timer = Date.now();
+                timer = 0;
             }
-        }
+
     }
 
 
@@ -437,22 +442,18 @@
                 switch (puyo[i][j].type) {
                     case "Block":
                         ctx.fillStyle = colorBlock;
-                        ctx.fillRect (50*i,50*j, 50, 50);
+                        ctx.fillRect (sizeB.x*i,sizeB.y*j, sizeB.x, sizeB.y);
                         break;
 
                     case "Puyo":
                         ctx.fillStyle = puyo[i][j].color;
-                        if(leGroupe.possede(puyo[i][j]) && puyo[i][j].basT()){
-                            ctx.arc(25+50*i,25+50*j+livepos,24,0,2*Math.PI);
+                        if((leGroupe.possede(puyo[i][j]) && (puyo[i][j].basT() || (leGroupe.possede(puyo[i][j]) && leGroupe.possede(puyo[i][j+1]) && puyo[i][j+1].basT())))){
+                            ctx.arc(sizeB.x/2+sizeB.x*i,sizeB.y/2+sizeB.y*j+livepos,sizeB.x/2-1,0,2*Math.PI);
                         }else {
-                            ctx.arc(25+50*i,25+50*j,24,0,2*Math.PI);
+                            ctx.arc(sizeB.x/2+sizeB.x*i,sizeB.y/2+sizeB.y*j,sizeB.x/2-1,0,2*Math.PI);
                         }
 
                         break;
-
-                    // default:
-                    //     ctx.fillStyle = "White";//puyo[i][j].couleur;
-                    //     ctx.arc(25+50*i,25+50*j,20,0,2*Math.PI);
 
                 }
                 ctx.stroke();
@@ -503,7 +504,7 @@
 
 <body onload="init()">
 
-    <canvas id="cvs" width="400" height="700" style="margin: 10px auto; border: solid 1px #000;"></canvas>
+    <canvas id="cvs" width=400 height=700 style="margin: 10px auto; border: solid 1px #000;"></canvas>
 
 </body>
 
