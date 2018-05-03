@@ -426,13 +426,25 @@
     }
 
     function lesPuyosDescendusDuCiel(){
-         for(var i=0;i<cln; i++){
+         for(var i=cln-1;i>=0; i--){
              for(var j=lgn-1; j>=0; j--){
                 if(puyo[i][j].type == "Puyo"){
                     puyo[i][j].fall();
                 }
             }
         }
+    }
+
+    function troudessous(cln, lgn){
+        if (lgn < 13){
+            if (puyo[cln][lgn].basT()){
+                return true;
+            }else{
+                return troudessous(cln, lgn+1)
+            }
+        }
+        return false;
+
     }
 
     function majAffichagePuyos(){
@@ -447,7 +459,7 @@
 
                     case "Puyo":
                         ctx.fillStyle = puyo[i][j].color;
-                        if((leGroupe.possede(puyo[i][j]) && (puyo[i][j].basT() || (leGroupe.possede(puyo[i][j]) && leGroupe.possede(puyo[i][j+1]) && puyo[i][j+1].basT())))){
+                        if(troudessous(i,j)){
                             ctx.arc(sizeB.x/2+sizeB.x*i,sizeB.y/2+sizeB.y*j+livepos,sizeB.x/2-1,0,2*Math.PI);
                         }else {
                             ctx.arc(sizeB.x/2+sizeB.x*i,sizeB.y/2+sizeB.y*j,sizeB.x/2-1,0,2*Math.PI);
