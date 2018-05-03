@@ -37,9 +37,9 @@
     var tabColor = ["#FF0000" /*rouge*/, "#00FF00" /*vert*/, "#0000FF" /*bleu*/, "#FF00FF" /*violet*/, "#FFFF00" /*jaune*/];
     var puyo = [];
     var timer ;
-    var legroupe;
+    var leGroupe;
     var suite = 0;
-    var playPause = true; //lance le jeu ou le met en pause
+    var playPause = false; //lance le jeu ou le met en pause
 
     /**
     *objet puyo
@@ -255,6 +255,7 @@
 
         timer = 0;
         // lancement de la boucle de jeu
+        playPause = true;
 
         boucleDeJeu();
     }
@@ -502,24 +503,24 @@
     captureAppuiToucheClavier = function(event) {
         switch (event.keyCode){
             case 37:
-                if(playPause==false){
+                if(playPause==false && leGroupe){
                     leGroupe.go("gauche");
                 }
                 break;
             case 38:
-                if(playPause==false){
+                if(playPause==false && leGroupe){
                     leGroupe.go("haut");
                     leGroupe.pivoter(0,1);
                 }
                 break;
             case 39:
-                if(playPause==false){
+                if(playPause==false && leGroupe){
                     leGroupe.go("droite");
                 }
                 break;
             case 40:
-                if(playPause==false){
-                        leGroupe.go("bas");
+                if(playPause==false && leGroupe){
+                    leGroupe.go("bas");
                 }
                 break;
             case 32:
