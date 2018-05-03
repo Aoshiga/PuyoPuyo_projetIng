@@ -13,6 +13,8 @@
     *Les constantes, les variables et les structures de PuyoPuyo
     */
 
+    var audioFin = new Audio('finJeu.mp3');
+    var finJeu = false;
     var sizeB = {x:0, y:0};
     var livepos = 0
     var puyoInChain = 0;
@@ -290,12 +292,9 @@
 
 
     update = function() {
-      if(playPause==false){
+      if(playPause==false || finJeu == false){
         timer++;
         livepos+=1/speed*sizeB.x;
-        // if (timer >= 10){
-        //     console.log(timer);
-        //     livepos+=0.50;
             if (timer == speed){
               livepos = 0;
                 tomber = false;
@@ -314,6 +313,9 @@
                             leGroupe = new GroupeJoueur();
                             actif = true;
                             nextColor();
+                        } else {
+                            finJeu = true;
+                            audioFin.play();
                         }
                     }
 
@@ -333,6 +335,9 @@
           majAffichageScore();
       }else{
           majMenu();
+      }
+      if(finJeu == true){
+          majMenu(0);
       }
     }
 
@@ -499,7 +504,7 @@
     /*
     *fonction qui permet au joueur de mettre pause/menu du jeu
     */
-    function majMenu(){
+    function majMenu(id=1){
         ctx.beginPath();
         ctx.fillStyle = "#000000";
         ctx.fillRect(0,0,sizeB.x*8,sizeB.y*14);
@@ -510,7 +515,11 @@
         ctx.textAlign="center";
         ctx.fillText("New Super Puyo-Puyo World 18",sizeB.x*4,sizeB.y*2,sizeB.x*8);
         ctx.fillText("#noFake #Prank #lifeIsPotatoes",sizeB.x*4,sizeB.y*3,sizeB.x*8);
-        ctx.fillText("Press Space to continue",sizeB.x*4,sizeB.y*7,sizeB.x*8);
+        if (id==1){
+            ctx.fillText("Press Space to continue",sizeB.x*4,sizeB.y*7,sizeB.x*8);
+        } else{
+            ctx.fillText("You LOSE !!!",sizeB.x*4,sizeB.y*7,sizeB.x*8);
+        }
     }
 
     captureAppuiToucheClavier = function(event) {
