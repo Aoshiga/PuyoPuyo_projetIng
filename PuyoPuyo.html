@@ -293,6 +293,7 @@
       if(playPause==false){
         timer++;
         livepos+=1/speed*sizeB.x;
+        levelup();
         // if (timer >= 10){
         //     console.log(timer);
         //     livepos+=0.50;
@@ -316,8 +317,6 @@
                             nextColor();
                         }
                     }
-
-
                 }
                 timer = 0;
             }
@@ -376,6 +375,26 @@
 
     function updateScore(){
         score += (puyoInChain*10)*(groupBonus+chainScore[chainPower]);
+    }
+
+    function levelup(){
+        if(score>50000){
+            speed = 2;
+        }else if (score>20000) {
+            speed = 5;
+        }else if (score>10000) {
+            speed = 10;
+        }else if (score>5000){
+            speed = 20;
+        }else if (score>2500){
+            speed = 30;
+        }else if (score>1000){
+            speed = 40;
+        }else if (score>500){
+            speed = 45;
+        }else{
+            speed = 50;
+        }
     }
 
 
