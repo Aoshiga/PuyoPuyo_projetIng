@@ -292,12 +292,12 @@
 
 
     update = function() {
-      if(playPause==false || finJeu == false){
-        timer++;
-        livepos+=1/speed*sizeB.x;
-        levelup();
+        if(playPause==false && finJeu == false){ //modif PAS || MAIS &&
+            timer++;
+            livepos+=1/speed*sizeB.x;
+            levelup();
             if (timer == speed){
-              livepos = 0;
+                livepos = 0;
                 tomber = false;
                 lesPuyosDescendusDuCiel();
                 if (tomber == false){
@@ -322,7 +322,7 @@
                 }
                 timer = 0;
             }
-      }
+        }
     }
 
 
@@ -378,31 +378,6 @@
           return counter;
     }
 
-    function updateScore(){
-        score += (puyoInChain*10)*(groupBonus+chainScore[chainPower]);
-    }
-
-    function levelup(){
-        if(score>50000){
-            speed = 2;
-        }else if (score>20000) {
-            speed = 5;
-        }else if (score>10000) {
-            speed = 10;
-        }else if (score>5000){
-            speed = 20;
-        }else if (score>2500){
-            speed = 30;
-        }else if (score>1000){
-            speed = 40;
-        }else if (score>500){
-            speed = 45;
-        }else{
-            speed = 50;
-        }
-    }
-
-
 /*
 *detruit les puyos d'un groupe si ce groupe est composé de 4 puyos ou plus
 */
@@ -448,6 +423,43 @@
         }
         return tempScore;
     }
+
+/*
+*updateScore met à jour le score du joueur
+*dépend du nombre de puyos et du nombre de groupes detruient et du nombre de chaines
+*/
+    function updateScore(){
+        score += (puyoInChain*10)*(groupBonus+chainScore[chainPower]);
+    }
+
+    function levelup(){
+        if(score>50000){
+            speed = 1;
+        }else if (score>30000) {
+            speed = 2;
+        }else if (score>20000) {
+            speed = 5;
+        }else if (score>15000){
+            speed = 10;
+        }else if (score>12000){
+            speed = 15;
+        }else if (score>10000){
+            speed = 20;
+        }else if (score>7500){
+            speed = 25;
+        }else if (score>5000){
+            speed = 30;
+        }else if (score>2500){
+            speed = 35;
+        }else if (score>1000){
+            speed = 40;
+        }else if (score>600){
+            speed = 45
+        }else{
+            speed = 50;
+        }
+    }
+
 
 
     function majAffichageScore(){
