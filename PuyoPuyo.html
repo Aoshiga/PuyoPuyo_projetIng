@@ -128,8 +128,8 @@
     function GroupeJoueur(){
         this.type = "groupe";
         this.rotation = 0;
-        puyo[3][0] = new Puyo(3,0,0);
-        puyo[4][0] = new Puyo(4,0,1);
+        puyo[3][1] = new Puyo(3,1,0);
+        puyo[4][1] = new Puyo(4,1,1);
         this.tbGr = [puyo[3][0],puyo[4][0]];
         this.go = function(direction, i=0, j=1){
             if(this.rotation >= 2){
@@ -279,8 +279,6 @@
             puyo[i][0] = new Block();
             puyo[i][lgn-1] = new Block();
         }
-        puyo[4][0] = ("Vide");
-        puyo[3][0] = ("Vide");
     }
 
     boucleDeJeu = function() {
@@ -310,7 +308,7 @@
                         chainPower = 0;
                         puyoInChain = 0;
                         groupBonus = 0;
-                        if (puyo[3][0]=="Vide" && puyo[4][0]=="Vide"){
+                        if (puyo[3][1]=="Vide" && puyo[4][1]=="Vide"){
                             leGroupe = new GroupeJoueur();
                             actif = true;
                             nextColor();
