@@ -5,37 +5,13 @@
     <meta charset="UTF-8">
     <title>PuyoPuyo</title>
     <script>
-    var ctx = null;
 
-    var clic = { x: 0, y: 0 };
 
-<<<<<<< HEAD
-    /**
-    *Les constantes, les variables et les structures de PuyoPuyo
-    */
-//    var cri = new Audio('puyo.wav');
-    var audioFin = new Audio('finJeu.mp3');
-    var finJeu = false;
-    var sizeB = {x:0, y:0};
-    var livepos = 0
-    var puyoInChain = 0;
-    var groupBonus = 0;
-    var chainPower = 0;
-    var score = 0;
-    var chainScore = [0,8,16,32,64,128,256,512];
-    //var colorBonus = [0,3,6,12,24];
-    var col = [];
-    var actif = true;
-    var tomber = false;
-    var colorVide = "#FFFFFF";
-    var colorBlock = "#B5351A";
-    var dir = {x:0, y:0};
-    var lgn = 14;
-    var cln = 8;
-=======
 /**
 *Les constantes, les variables et les structures de PuyoPuyo
 */
+    var ctx = null;
+    var clic = { x: 0, y: 0 };
     var audioFin = new Audio('finJeu.mp3'); //audio de fin du jeu
     var finJeu = false; //boolean qui met fin au jeu
     var sizeB = {x:0, y:0}; //position
@@ -53,7 +29,6 @@
     var dir = {x:0, y:0}; //direction des puyos
     var lgn = 14; //constante caracterisant le nombre de lignes du tableau de jeu
     var cln = 8; //constante caracterisant le nombre de colonnes du tableau de jeu
->>>>>>> 91752b6e764356b58420234bbe1900bc035abab3
     var score = 0; //score du joueur
     var detection = true; //met fin à la destruction des puyos dans le jeu
     var chaine = 0; //compte le nombre de chaine pour le score
