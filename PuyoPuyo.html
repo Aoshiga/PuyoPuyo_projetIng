@@ -12,6 +12,7 @@
 */
     var ctx = null;
     var clic = { x: 0, y: 0 };
+    var tabSon = [new Audio("1.wav"),new Audio("2.wav"),new Audio("3.wav"),new Audio("4.wav"),new Audio("5.wav"),new Audio("6.wav"),];
     var audioFin = new Audio('finJeu.mp3'); //audio de fin du jeu
     var finJeu = false; //boolean qui met fin au jeu
     var sizeB = {x:0, y:0}; //position
@@ -337,6 +338,7 @@
                             leGroupe = new GroupeJoueur();
                             actif = true;
                             nextColor();
+                            tabSon[Math.floor(Math.random()*6)].play();
                         } else {
                             finJeu = true;
                             audioFin.play();
